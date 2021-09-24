@@ -1,8 +1,9 @@
 {
-  "name": "glhd/laravel-package-template",
+  "name": "glhd/gretel",
   "description": "",
   "keywords": [
-    "laravel"
+    "laravel",
+    "breadcrumbs"
   ],
   "authors": [
     {
@@ -23,7 +24,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Glhd\\LaravelPackageTemplate\\": "src/"
+      "Glhd\\Gretel\\": "src/"
     }
   },
   "autoload-dev": {
@@ -31,7 +32,7 @@
       "tests/TestCase.php"
     ],
     "psr-4": {
-      "Glhd\\LaravelPackageTemplate\\Tests\\": "tests/"
+      "Glhd\\Gretel\\Tests\\": "tests/"
     }
   },
   "minimum-stability": "stable",

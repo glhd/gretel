@@ -1,14 +1,12 @@
 <?php
 
-namespace Galahad\LaravelPackageTemplate\Support;
+namespace Glhd\Gretel\Support;
 
-use Galahad\Aire\Aire;
-use Galahad\Aire\Elements\Form;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
-class PackageServiceProvider extends ServiceProvider
+class GretelServiceProvider extends ServiceProvider
 {
 	protected string $base_dir;
 	
@@ -30,19 +28,19 @@ class PackageServiceProvider extends ServiceProvider
 	
 	public function register()
 	{
-		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'laravel-package-template');
+		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'gretel');
 	}
 	
 	protected function bootViews() : self
 	{
 		$views_directory = "{$this->base_dir}/resources/views";
 		
-		$this->loadViewsFrom($views_directory, 'laravel-package-template');
+		$this->loadViewsFrom($views_directory, 'gretel');
 		
 		if (method_exists($this->app, 'resourcePath')) {
 			$this->publishes([
-				$views_directory => $this->app->resourcePath('views/vendor/laravel-package-template'),
-			], 'laravel-package-template-views');
+				$views_directory => $this->app->resourcePath('views/vendor/gretel'),
+			], 'gretel-views');
 		}
 		
 		return $this;
@@ -51,7 +49,7 @@ class PackageServiceProvider extends ServiceProvider
 	protected function bootBladeComponents() : self
 	{
 		if (version_compare($this->app->version(), '8.0.0', '>=')) {
-			Blade::componentNamespace('Glhd\\LaravelPackageTemplate\\Components', 'laravel-package-template');
+			Blade::componentNamespace('Glhd\\Gretel\\Components', 'gretel');
 		}
 		
 		return $this;
@@ -61,8 +59,8 @@ class PackageServiceProvider extends ServiceProvider
 	{
 		if (method_exists($this->app, 'configPath')) {
 			$this->publishes([
-				"{$this->base_dir}/config.php" => $this->app->configPath('laravel-package-template.php'),
-			], 'laravel-package-template-config');
+				"{$this->base_dir}/config.php" => $this->app->configPath('gretel.php'),
+			], 'gretel-config');
 		}
 		
 		return $this;
