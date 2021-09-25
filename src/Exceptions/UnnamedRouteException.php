@@ -2,8 +2,6 @@
 
 namespace Glhd\Gretel\Exceptions;
 
-use Glhd\Gretel\Macros;
-
 class UnnamedRouteException extends \InvalidArgumentException
 {
 	public function __construct()

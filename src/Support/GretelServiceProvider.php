@@ -5,7 +5,6 @@ namespace Glhd\Gretel\Support;
 use Glhd\Gretel\Macros;
 use Glhd\Gretel\Registry;
 use Illuminate\Contracts\Container\Container;
-use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 
@@ -37,7 +36,7 @@ class GretelServiceProvider extends ServiceProvider
 		$this->app->booting(fn(Container $app) => Macros::register($app->make(Registry::class)));
 	}
 	
-	protected function bootViews() : self
+	protected function bootViews(): self
 	{
 		$views_directory = "{$this->base_dir}/resources/views";
 		
@@ -52,7 +51,7 @@ class GretelServiceProvider extends ServiceProvider
 		return $this;
 	}
 	
-	protected function bootBladeComponents() : self
+	protected function bootBladeComponents(): self
 	{
 		if (version_compare($this->app->version(), '8.0.0', '>=')) {
 			Blade::componentNamespace('Glhd\\Gretel\\Components', 'gretel');
@@ -61,7 +60,7 @@ class GretelServiceProvider extends ServiceProvider
 		return $this;
 	}
 	
-	protected function bootConfig() : self
+	protected function bootConfig(): self
 	{
 		if (method_exists($this->app, 'configPath')) {
 			$this->publishes([

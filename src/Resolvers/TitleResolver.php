@@ -2,8 +2,6 @@
 
 namespace Glhd\Gretel\Resolvers;
 
-use Closure;
-use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Registry;
 use Illuminate\Routing\Route;
 
