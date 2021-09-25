@@ -105,13 +105,27 @@ class RouteMacroTest extends TestCase
 		Route::get('/notes/{note}', fn(Note $note) => 'OK')
 			->middleware(SubstituteBindings::class)
 			->name('notes.show')
-			->breadcrumb(fn(Note $note) => $note->note, fn(Note $note) => route('users.show', $note->author));
+			->breadcrumb(
+				fn(Note $note) => $note->note, 
+				fn(Note $note) => route('users.show', $note->author)
+			);
 		
 		$this->get(route('notes.show', $note));
 		$this->assertActiveBreadcrumbs(
 			['Users', '/users'],
 			[$user->name, route('users.show', $user)],
 			[$note->note, route('notes.show', $note)]
+		);
+		
+		// We also want to test that the forced binding of 'users.show' to a different
+		// set of route parameters doesn't break subsequent calls to that route in a
+		// different context.
+		
+		$user2 = User::factory()->create();
+		$this->get(route('users.show', $user2));
+		$this->assertActiveBreadcrumbs(
+			['Users', '/users'],
+			[$user2->name, route('users.show', $user2)],
 		);
 	}
 	

@@ -38,8 +38,8 @@ class Breadcrumbs implements Arrayable, Jsonable
 	public function toArray()
 	{
 		return $this->breadcrumbs->map(fn(Breadcrumb $breadcrumb) => [
-			'title' => $this->resolve($breadcrumb->title),
-			'url' => $this->resolve($breadcrumb->url),
+			'title' => $this->resolve($breadcrumb->title, $breadcrumb),
+			'url' => $this->resolve($breadcrumb->url, $breadcrumb),
 		]);
 	}
 	
@@ -57,7 +57,7 @@ class Breadcrumbs implements Arrayable, Jsonable
 	{
 		$breadcrumb = $this->getBreadcrumb($value);
 		
-		if ($parent = $this->resolve($breadcrumb->parent)) {
+		if ($parent = $this->resolve($breadcrumb->parent, $breadcrumb)) {
 			$this->walk($parent);
 		}
 		
@@ -73,10 +73,16 @@ class Breadcrumbs implements Arrayable, Jsonable
 		return $this->registry->get($breadcrumb);
 	}
 	
-	protected function resolve($value)
+	protected function resolve($value, Breadcrumb $breadcrumb)
 	{
+		$route = $this->route;
+		
+		if ($breadcrumb instanceof RouteBreadcrumb && $breadcrumb->route) {
+			$route = $breadcrumb->route;
+		}
+		
 		if ($value instanceof Resolver) {
-			return $value->resolve($this->route, $this->registry);
+			return $value->resolve($route, $this->registry);
 		}
 		
 		return $value;

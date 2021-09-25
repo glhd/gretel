@@ -5,8 +5,11 @@ namespace Glhd\Gretel\Resolvers;
 use Closure;
 use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Registry;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Route;
 use RuntimeException;
+use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 
 class ParentResolver extends Resolver
 {
@@ -15,7 +18,7 @@ class ParentResolver extends Resolver
 		$result = parent::resolve($route, $registry);
 		
 		if (is_string($result)) {
-			return $registry->get($result);
+			return $this->findParentByUrl($result, $registry);
 		}
 		
 		return $result;
@@ -40,5 +43,30 @@ class ParentResolver extends Resolver
 		}
 		
 		return $parameters;
+	}
+	
+	protected function findParentByUrl(string $url, Registry $registry)
+	{
+		$router = app('router');
+		$request = Request::createFromBase(SymfonyRequest::create($url));
+		
+		if (!$route = $router->getRoutes()->match($request)) {
+			throw new RuntimeException('Unable to find route for parent.'); // FIXME
+		}
+		
+		if ($route->hasParameters()) {
+			$router->substituteBindings($route);
+			$router->substituteImplicitBindings($route);
+		}
+		
+		// FIXME: It may be safer to bind this data to the Breadcrumbs object, and then
+		// forcibly reset that object each time a new request it bound. That way we're never
+		// messing with the breadcrumb objects themselves—just telling the current request
+		// how to handle the parent.
+		
+		$breadcrumb = $registry->getOrFail($route);
+		$breadcrumb->setRoute($route);
+		
+		return $breadcrumb;
 	}
 }
