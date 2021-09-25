@@ -2,8 +2,8 @@
 
 namespace Glhd\Gretel\Tests;
 
-use Glhd\Gretel\Support\PackageServiceProvider;
-use Illuminate\Container\Container;
+use Glhd\Gretel\Support\GretelServiceProvider;
+use Illuminate\Config\Repository;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
@@ -12,16 +12,15 @@ abstract class TestCase extends Orchestra
 	{
 		parent::setUp();
 		
-		$config = $this->app['config'];
-		
 		// Add encryption key for HTTP tests
+		$config = $this->app->make(Repository::class);
 		$config->set('app.key', 'base64:tfsezwCu4ZRixRLA/+yL/qoouX++Q3lPAPOAbtnBCG8=');
 	}
 	
 	protected function getPackageProviders($app)
 	{
 		return [
-			PackageServiceProvider::class,
+			GretelServiceProvider::class,
 		];
 	}
 	

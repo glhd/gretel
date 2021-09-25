@@ -2,6 +2,9 @@
 
 namespace Glhd\Gretel\Support;
 
+use Glhd\Gretel\Macros;
+use Glhd\Gretel\Registry;
+use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +32,9 @@ class GretelServiceProvider extends ServiceProvider
 	public function register()
 	{
 		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'gretel');
+		
+		$this->app->singleton(Registry::class);
+		$this->app->booting(fn(Container $app) => Macros::register($app->make(Registry::class)));
 	}
 	
 	protected function bootViews() : self
