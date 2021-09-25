@@ -3,6 +3,7 @@
 namespace Glhd\Gretel;
 
 use Glhd\Gretel\Resolvers\Resolver;
+use Illuminate\Support\Arr;
 
 class Breadcrumb
 {
@@ -33,6 +34,21 @@ class Breadcrumb
 		$parent->setUrl($url);
 		
 		$this->parent = Resolver::make($parent);
+		
+		return $this;
+	}
+	
+	public function route(string $name, $parameters = [], bool $absolute = true): self
+	{
+		$breadcrumb = app(Registry::class)->getOrFail($name);
+		
+		$router = app('router');
+		$route = $router->getRoutes()->getByName($name);
+		$router->substituteBindings($route);
+		
+		$this->title = $breadcrumb->title->overrideRoute($name, $parameters);
+		$this->parent = $breadcrumb->parent->overrideRoute($name, $parameters);
+		$this->url = Resolver::make(route($name, $parameters));
 		
 		return $this;
 	}

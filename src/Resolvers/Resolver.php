@@ -65,6 +65,6 @@ class Resolver
 	
 	protected function resolveParameters(Route $route, Registry $registry): array
 	{
-		return [];
+		return array_values($route->parameters());
 	}
 }

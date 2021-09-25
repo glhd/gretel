@@ -4,6 +4,7 @@ namespace Glhd\Gretel;
 
 use Glhd\Gretel\Exceptions\UnnamedRouteException;
 use Glhd\Gretel\Routing\Breadcrumbs;
+use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 

@@ -2,20 +2,14 @@
 
 namespace Glhd\Gretel\Tests;
 
-use Closure;
 use Glhd\Gretel\Breadcrumb;
-use Glhd\Gretel\Registry;
-use Glhd\Gretel\RouteBreadcrumb as Crumb;
-use Glhd\Gretel\Tests\Mocks\Note;
-use Glhd\Gretel\Tests\Mocks\User;
+use Glhd\Gretel\Tests\Models\Note;
+use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Traits\ReflectsClosures;
 
 class RouteMacroTest extends TestCase
 {
-	use ReflectsClosures;
-	
 	public function test_macro_registers_new_breadcrumb(): void
 	{
 		Route::get('/users', $this->action())
@@ -59,113 +53,88 @@ class RouteMacroTest extends TestCase
 	
 	public function test_dynamic_title_via_closure(): void
 	{
+		$user = User::factory()->create();
+		
 		Route::get('/users/{user}', fn(User $user) => 'OK')
 			->middleware(SubstituteBindings::class)
 			->name('users.show')
 			->breadcrumb(fn(User $user) => $user->name);
 		
-		$this->get('/users/3');
+		$this->get(route('users.show', $user));
 		
-		$this->assertActiveBreadcrumbs(['User:3:id', '/users/3']);
+		$this->assertActiveBreadcrumbs([$user->name, route('users.show', $user)]);
+	}
+	
+	public function test_nested_routes(): void
+	{
+		$user = User::factory()->create();
+		$note = Note::factory()->create(['user_id' => $user->id]);
+		
+		Route::get('/users/{user}', fn(User $user) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('users.show')
+			->breadcrumb(fn(User $user) => $user->name);
+		
+		Route::get('/users/{user}/notes/{note}', fn(User $user, Note $note) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('users.notes.show')
+			->breadcrumb(fn(User $user, Note $note) => $note->note, 'users.show');
+		
+		$this->get(route('users.notes.show', [$user, $note]));
+		
+		$this->assertActiveBreadcrumbs(
+			[$user->name, route('users.show', $user)],
+			[$note->note, route('users.notes.show', [$user, $note])]
+		);
+	}
+	
+	public function test_shallow_nested_routes(): void
+	{
+		$user = User::factory()->create();
+		$note = Note::factory()->create(['user_id' => $user->id]);
+		
+		Route::get('/users', fn(User $user) => 'OK')
+			->name('users.index')
+			->breadcrumb('Users');
+		
+		Route::get('/users/{user}', fn(User $user) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('users.show')
+			->breadcrumb(fn(User $user) => $user->name, '.index');
+		
+		Route::get('/notes/{note}', fn(Note $note) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('notes.show')
+			->breadcrumb(fn(Note $note) => $note->note, fn(Note $note) => route('users.show', $note->author));
+		
+		$this->get(route('notes.show', $note));
+		$this->assertActiveBreadcrumbs(
+			['Users', '/users'],
+			[$user->name, route('users.show', $user)],
+			[$note->note, route('notes.show', $note)]
+		);
 	}
 	
 	public function test_custom_parent(): void
 	{
-		Route::get('/users/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.show')
-			->breadcrumb(fn(User $user) => $user->name);
-		
-		Route::get('/admins/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('admins.show')
-			->breadcrumb(fn(User $user) => $user->name);
+		$note = Note::factory()->create();
 		
 		Route::get('/notes/{note}', fn(Note $note) => 'OK')
 			->middleware(SubstituteBindings::class)
 			->name('notes.show')
 			->breadcrumb(
-				fn(Note $note) => $note->name,
-				fn(Breadcrumb $breadcrumb, Note $note) => $breadcrumb("Parent of {$note->id}", url("/parent-{$note->id}"))
-			);
-		
-		$this->get('/notes/1');
-		$this->assertActiveBreadcrumbs(['Parent of 1', '/parent-1'], ['Note:1:id', '/notes/1']);
-		
-		$this->get('/notes/2');
-		$this->assertActiveBreadcrumbs(['Parent of 2', '/parent-2'], ['Note:2:id', '/notes/2']);
-	}
-	
-	public function test_dynamic_route_parent_via_closure(): void
-	{
-		Route::get('/users/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.show')
-			->breadcrumb(fn(User $user) => $user->name);
-		
-		Route::get('/admins/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('admins.show')
-			->breadcrumb(fn(User $user) => $user->name);
-		
-		Route::get('/notes/{note}', fn(Note $note) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('notes.show')
-			->breadcrumb(
-				fn(Note $note) => $note->name,
+				fn(Note $note) => $note->note,
 				function(Breadcrumb $breadcrumb, Note $note) {
-					// Pretend that notes can have different parents
-					return 0 === $note->id % 2
-						? $breadcrumb->route('admins.show', $note->id)
-						: $breadcrumb->route('users.show', $note->id);
+					return $breadcrumb("Parent of {$note->id}", url("/parent-{$note->id}"));
 				}
 			);
 		
-		$this->get('/notes/1');
-		$this->assertActiveBreadcrumbs(['User:1:id', '/users/1'], ['Note:1:id', '/notes/1']);
-		
-		$this->get('/notes/2');
-		$this->assertActiveBreadcrumbs(['Admin:2:id', '/admins/2'], ['Note:2:id', '/notes/2']);
+		$this->get(route('notes.show', $note));
+		$this->assertActiveBreadcrumbs(
+			["Parent of {$note->id}", "/parent-{$note->id}"],
+			[$note->note, route('notes.show', $note)]
+		);
 	}
-	
-	public function test_nested_route_parameters(): void
-	{
-		Route::get('/users/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.show')
-			->breadcrumb(fn(User $user) => $user->name);
-		
-		Route::get('/users/{user}/notes/{note}', fn(User $user, Note $note) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.notes.show')
-			->breadcrumb(fn(User $user, Note $note) => $note->name, 'users.show');
-		
-		$this->get('/users/3/notes/6');
-		
-		$this->assertActiveBreadcrumbs(['User:3:id', '/users/3'], ['Note:6:id', '/users/3/notes/6']);
-	}
-	
-	public function test_dynamic_nested_route_parameters(): void
-	{
-		Route::get('/users/{user}', fn(User $user) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.show')
-			->breadcrumb(fn(User $user) => $user->name);
-		
-		Route::get('/users/{user}/notes/{note}', fn(User $user, Note $note) => 'OK')
-			->middleware(SubstituteBindings::class)
-			->name('users.notes.show')
-			->breadcrumb(fn(User $user, Note $note) => $note->name, fn() => 'users.show');
-		
-		$this->get('/users/3/notes/6');
-		$this->assertActiveBreadcrumbs(['User:3:id', '/users/3'], ['Note:6:id', '/users/3/notes/6']);
-	}
-	
-	// Cases:
-	// title, closure (both cases)
-	// closure, null (both cases)
-	// closure, string (both cases)
-	// closure, closure (both cases)
 	
 	/**
 	 * @param array{string, string} ...$expectations
@@ -184,24 +153,6 @@ class RouteMacroTest extends TestCase
 		}
 		
 		return $this;
-	}
-	
-	protected function assertBreadcrumbIsRegistered($name, Closure $assertions = null): self
-	{
-		$breadcrumb = $this->registry()->get($name);
-		
-		$this->assertInstanceOf(Crumb::class, $breadcrumb);
-		
-		if ($assertions) {
-			$this->assertTrue($assertions($breadcrumb, $breadcrumb->getParent()));
-		}
-		
-		return $this;
-	}
-	
-	protected function registry(): Registry
-	{
-		return $this->app->make(Registry::class);
 	}
 	
 	protected function action()

@@ -1,7 +1,8 @@
 <?php
 
-namespace Glhd\Gretel;
+namespace Glhd\Gretel\Routing;
 
+use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
 use Glhd\Gretel\Resolvers\UrlResolver;

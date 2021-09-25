@@ -32,7 +32,8 @@
       "tests/TestCase.php"
     ],
     "psr-4": {
-      "Glhd\\Gretel\\Tests\\": "tests/"
+      "Glhd\\Gretel\\Tests\\": "tests/",
+      "Glhd\\Gretel\\Tests\\Database\\Factories\\": "tests/database/factories/"
     }
   },
   "minimum-stability": "stable",

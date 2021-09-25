@@ -32,8 +32,16 @@ class GretelServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'gretel');
 		
-		$this->app->singleton(Registry::class);
-		$this->app->booting(fn(Container $app) => Macros::register($app->make(Registry::class)));
+		$this->app->singleton(Registry::class, function(Container $app) {
+			$routes = $app->make('router')->getRoutes();
+			return new Registry($routes);
+		});
+		
+		// This has to happen in booting (before boot) so that the macro
+		// is available in time for the RouteServiceProvider.
+		$this->app->booting(function(Container $app) {
+			Macros::register($app->make(Registry::class));
+		});
 	}
 	
 	protected function bootViews(): self
