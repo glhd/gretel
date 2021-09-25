@@ -106,7 +106,7 @@ class RouteMacroTest extends TestCase
 			->middleware(SubstituteBindings::class)
 			->name('notes.show')
 			->breadcrumb(
-				fn(Note $note) => $note->note, 
+				fn(Note $note) => $note->note,
 				fn(Note $note) => route('users.show', $note->author)
 			);
 		

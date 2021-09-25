@@ -6,7 +6,6 @@ use Closure;
 use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Registry;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\Route;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;

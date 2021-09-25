@@ -3,7 +3,6 @@
 namespace Glhd\Gretel;
 
 use Glhd\Gretel\Resolvers\Resolver;
-use Illuminate\Support\Arr;
 
 class Breadcrumb
 {
