@@ -17,8 +17,12 @@ class ParentResolver extends Resolver
 	{
 		$result = parent::resolve($route, $registry);
 		
-		if (is_string($result)) {
+		if (is_string($result) && filter_var($result, FILTER_VALIDATE_URL)) {
 			return $this->findParentByUrl($result, $registry);
+		}
+		
+		if (!($result instanceof Breadcrumb)) {
+			throw new RuntimeException('Unable to resolve parent breadcrumb.');
 		}
 		
 		return $result;
