@@ -2,14 +2,20 @@
 
 namespace Glhd\Gretel;
 
+use Closure;
 use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
-use Illuminate\Routing\RouteCollectionInterface;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Traits\ForwardsCalls;
 
+/**
+ * @mixin Collection
+ */
 class Registry
 {
+	use ForwardsCalls;
+	
 	protected Collection $breadcrumbs;
 	
 	public function __construct()
@@ -40,6 +46,11 @@ class Registry
 		}
 		
 		throw new MissingBreadcrumbException($this->resolveName($route));
+	}
+	
+	public function __call($name, $arguments)
+	{
+		return $this->forwardDecoratedCallTo($this->breadcrumbs, $name, $arguments);
 	}
 	
 	protected function resolveName($route): ?string

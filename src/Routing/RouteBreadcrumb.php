@@ -32,4 +32,9 @@ class RouteBreadcrumb extends Breadcrumb
 		
 		return $this;
 	}
+	
+	public function __sleep()
+	{
+		return ['name', 'title', 'parent', 'url'];
+	}
 }
