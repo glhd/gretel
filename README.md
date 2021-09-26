@@ -61,7 +61,7 @@ Route::get('/', HomeController::class)
   ->breadcrumb('Home');
 ```
 
-<img height="100" src="https://user-images.githubusercontent.com/21592/134790571-5e31fa7f-ba95-497e-993c-76fa32506f67.png" />
+![Homepage Example](https://user-images.githubusercontent.com/21592/134791634-186fd0a2-4262-4778-96d1-713e10931ae9.png)
 
 If you need to dynamically control the title, pass in a closure instead:
 
@@ -71,7 +71,7 @@ Route::get('/dashboard', DashboardController::class)
   ->breadcrumb(fn() => Auth::user()->name.'’s dashboard');
 ```
 
-<img height="100" src="https://user-images.githubusercontent.com/21592/134790572-e64781c1-2543-46c3-b2f5-a5cfe7aca78f.png" />
+![Dashboard Example](https://user-images.githubusercontent.com/21592/134791636-d97d767f-6506-41c6-895d-611840e40fa9.png)
 
 #### Nested Breadcrumb
 
@@ -92,7 +92,7 @@ Route::get('/users/{user}/edit', [UserController::class, 'edit'])
   ->breadcrumb('Edit', 'users.show');
 ```
 
-<img height="100" src="https://user-images.githubusercontent.com/21592/134790599-2727e8a6-1511-4751-99d8-682baf5c1201.png" />
+![Nested Route Example](https://user-images.githubusercontent.com/21592/134791637-2a10a46e-250b-4738-b8fa-68169fc830dd.png)
 
 Here, you can see that our `users.show` route references `users.index` as its parent. This way, when you render
 breadcrumbs for `users.show` it will also show the breadcrumb for `users.index`.
@@ -132,7 +132,7 @@ Route::get('/users/{user}', [UserController::class, 'show'])
   );
 ```
 
-<img height="100" src="https://user-images.githubusercontent.com/21592/134790838-2fb225d3-6ab5-4f44-9e66-5a19b8f9f355.png" />
+![Shallow Nested Example](https://user-images.githubusercontent.com/21592/134791638-fbb87040-e27f-4749-9175-0f5dce995924.png)
 
 #### Fully Custom Parent
 
@@ -152,7 +152,7 @@ Route::get('/inbound-links/{link}', [InboundLinkController::class, 'show'])
   );
 ```
 
-<img height="100" src="https://user-images.githubusercontent.com/21592/134791042-d345135c-8d84-419b-b105-df383cb62258.png" />
+![Fully Custom Example](https://user-images.githubusercontent.com/21592/134791639-84436e1e-6ed3-4ed3-8069-b29ca730a18d.png)
 
 ### Displaying Breadcrumbs
 
