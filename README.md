@@ -1,4 +1,6 @@
-<div style="float: right;">
+<img alt="Gretel from the story 'Hansel and Gretel' holding bread behind her back" src="gretel.png" align="right" />
+
+<div>
 	<a href="https://github.com/glhd/gretel/actions" target="_blank">
 		<img 
 			src="https://github.com/glhd/gretel/workflows/PHPUnit/badge.svg" 
@@ -30,8 +32,6 @@
         />
     </a>
 </div>
-
-<img src="gretel.png" align="right" />
 
 # Gretel
 
