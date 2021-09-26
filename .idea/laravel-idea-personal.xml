@@ -3,6 +3,7 @@
   <component name="LaravelIdeaPersonalSettings">
     <option name="generationStringOptionValues">
       <map>
+        <entry key="createBladeComponent.type" value="Class and blade" />
         <entry key="createDatabaseMigration.anonymous" value="1" />
       </map>
     </option>

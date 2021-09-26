@@ -35,9 +35,14 @@ class Breadcrumbs implements Arrayable, Jsonable
 		$this->walk($route->getName());
 	}
 	
+	public function toCollection(): Collection
+	{
+		return new Collection($this->toArray());
+	}
+	
 	public function toArray()
 	{
-		return $this->breadcrumbs->map(fn(Breadcrumb $breadcrumb) => [
+		return $this->breadcrumbs->map(fn(Breadcrumb $breadcrumb) => (object) [
 			'title' => $this->resolve($breadcrumb->title, $breadcrumb),
 			'url' => $this->resolve($breadcrumb->url, $breadcrumb),
 		]);
@@ -55,7 +60,9 @@ class Breadcrumbs implements Arrayable, Jsonable
 	
 	protected function walk($value): void
 	{
-		$breadcrumb = $this->getBreadcrumb($value);
+		if (!$breadcrumb = $this->getBreadcrumb($value)) {
+			return;
+		}
 		
 		if ($parent = $this->resolve($breadcrumb->parent, $breadcrumb)) {
 			$this->walk($parent);
@@ -64,7 +71,7 @@ class Breadcrumbs implements Arrayable, Jsonable
 		$this->breadcrumbs->push($breadcrumb);
 	}
 	
-	protected function getBreadcrumb($breadcrumb): Breadcrumb
+	protected function getBreadcrumb($breadcrumb): ?Breadcrumb
 	{
 		if ($breadcrumb instanceof Breadcrumb) {
 			return $breadcrumb;

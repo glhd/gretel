@@ -12,11 +12,8 @@ class Registry
 {
 	protected Collection $breadcrumbs;
 	
-	protected RouteCollectionInterface $routes;
-	
-	public function __construct(RouteCollectionInterface $routes)
+	public function __construct()
 	{
-		$this->routes = $routes;
 		$this->breadcrumbs = new Collection();
 	}
 	
@@ -29,7 +26,9 @@ class Registry
 	
 	public function get($route): ?RouteBreadcrumb
 	{
-		$name = $this->resolveName($route);
+		if (!$name = $this->resolveName($route)) {
+			return null;
+		}
 		
 		return $this->breadcrumbs->get($name);
 	}
@@ -43,10 +42,10 @@ class Registry
 		throw new MissingBreadcrumbException($this->resolveName($route));
 	}
 	
-	protected function resolveName($route): string
+	protected function resolveName($route): ?string
 	{
 		return $route instanceof Route
 			? $route->getName()
-			: $route;
+			: (string) $route;
 	}
 }

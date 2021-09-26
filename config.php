@@ -1,3 +1,5 @@
 <?php
 
-return [];
+return [
+	'view' => 'gretel::tailwind',
+];

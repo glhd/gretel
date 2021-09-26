@@ -4,9 +4,14 @@ namespace Glhd\Gretel\Support;
 
 use Glhd\Gretel\Macros;
 use Glhd\Gretel\Registry;
-use Illuminate\Contracts\Container\Container;
+use Glhd\Gretel\Routing\Breadcrumbs as RouteBreadcrumbs;
+use Glhd\Gretel\View\Components\Breadcrumbs as BreadcrumbComponent;
+use Illuminate\Container\Container;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Str;
+use Illuminate\View\Compilers\BladeCompiler;
 
 class GretelServiceProvider extends ServiceProvider
 {
@@ -32,10 +37,17 @@ class GretelServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'gretel');
 		
-		$this->app->singleton(Registry::class, function(Container $app) {
-			$routes = $app->make('router')->getRoutes();
-			return new Registry($routes);
-		});
+		$this->app->singleton(Registry::class);
+		$this->app->singleton(RouteBreadcrumbs::class);
+		
+		// We want to make sure that our breadcrumbs are reset each time a new
+		// route instance is bound to the container.
+		if (method_exists($this->app, 'rebinding')) {
+			$this->app->rebinding(
+				Route::class,
+				fn(Container $app) => $app->forgetInstance(RouteBreadcrumbs::class)
+			);
+		}
 		
 		// This has to happen in booting (before boot) so that the macro
 		// is available in time for the RouteServiceProvider.
@@ -61,9 +73,10 @@ class GretelServiceProvider extends ServiceProvider
 	
 	protected function bootBladeComponents(): self
 	{
-		if (version_compare($this->app->version(), '8.0.0', '>=')) {
-			Blade::componentNamespace('Glhd\\Gretel\\Components', 'gretel');
-		}
+		$this->callAfterResolving(BladeCompiler::class, function() {
+			Blade::componentNamespace(Str::beforeLast(BreadcrumbComponent::class, '\\'), 'gretel');
+			Blade::component(BreadcrumbComponent::class, 'breadcrumbs');
+		});
 		
 		return $this;
 	}
