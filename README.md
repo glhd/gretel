@@ -99,7 +99,7 @@ breadcrumbs for `users.show` it will also show the breadcrumb for `users.index`.
 
 Gretel assumes that the parameters in nested routes can be safely used for their parent routes. In this example,
 `users.edit` will render the `users.show` breadcrumb using the `User` value that was resolved for the edit action.
-In the vast majority of cases, this is exactly what you want. If not, you can override this behavior (see below).
+In the vast majority of cases, this is exactly what you want. If not, you can override this behavior ([see below](#fully-custom-parent)).
 
 ##### Parent Shorthand
 
