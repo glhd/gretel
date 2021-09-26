@@ -146,8 +146,23 @@ Route::get('/inbound-links/{link}', [InboundLinkController::class, 'show'])
   ->breadcrumb(
     'Inbound Link Details',
     function(Breadcrumb $breadcrumb, InboundLink $link) {
-        $breadcrumb->setTitle($link->source_page_title);
-        $breadcrumb->setUrl($link->source_page_url);
+      $breadcrumb->setTitle($link->source_page_title);
+      $breadcrumb->setUrl($link->source_page_url);
+    }
+  );
+```
+
+##### Callable Shorthand
+
+The `Breadcrumb` object is callable which lets you define the title and URL in one quick call:
+
+```php
+Route::get('/inbound-links/{link}', [InboundLinkController::class, 'show'])
+  ->name('inbound-links.show')
+  ->breadcrumb(
+    'Inbound Link Details',
+    fn(Breadcrumb $breadcrumb, InboundLink $link) {
+      $breadcrumb($link->source_page_title, $link->source_page_url);
     }
   );
 ```
