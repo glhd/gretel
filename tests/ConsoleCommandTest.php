@@ -53,7 +53,7 @@ class ConsoleCommandTest extends TestCase
 		$this->assertTrue($registry->has('notes.show'));
 		
 		$this->artisan('breadcrumbs:clear');
-		$this->assertFileNotExists($cache->path());
+		$this->assertFileDoesNotExist($cache->path());
 	}
 	
 	public function test_cache_command_triggers_error_if_routes_are_already_cached(): void
