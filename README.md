@@ -135,41 +135,6 @@ Route::get('/users/{user}', [UserController::class, 'show'])
 
 ![Shallow Nested Example](https://user-images.githubusercontent.com/21592/134791638-fbb87040-e27f-4749-9175-0f5dce995924.png)
 
-Because you're usually just pulling a relation off the child model, Gretel provides a shorthand
-to make it easier. The keys should be the route parameter used in the parent route (in our example,
-the parent is `/companies/{company}` so we would use `company` for the key), and the value should be 
-the relationship name on the child (in our example, `$user->company`, so `company` for the value as well).
-
-```php
-Route::get('/users/{user}', [UserController::class, 'show'])
-  ->name('users.show')
-  ->breadcrumb(
-    fn(User $user) => $user->name, 
-    'companies.show', 
-    ['company' => 'company']
-  );
-```
-
-If the relationship name and the route parameter name are the same, you can skip the key:
-
-```php
-Route::get('/users/{user}', [UserController::class, 'show'])
-  ->name('users.show')
-  ->breadcrumb(
-    fn(User $user) => $user->name, 
-    'companies.show', 
-    ['company']
-  );
-```
-
-And if the parent relationship only requires one parameter, you can skip the array, as well:
-
-```php
-Route::get('/users/{user}', [UserController::class, 'show'])
-  ->name('users.show')
-  ->breadcrumb(fn(User $user) => $user->name, 'companies.show', 'company');
-```
-
 ### Displaying Breadcrumbs
 
 You can display the breadcrumbs for the current route with the `<x-breadcrumbs />` Blade component. The Blade component
