@@ -2,7 +2,6 @@
 
 namespace Glhd\Gretel;
 
-use Closure;
 use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
@@ -23,9 +22,18 @@ class Registry
 		$this->breadcrumbs = new Collection();
 	}
 	
-	public function register(RouteBreadcrumb $breadcrumb): Registry
+	public function clear(): Registry
 	{
-		$this->breadcrumbs->put($breadcrumb->name, $breadcrumb);
+		$this->breadcrumbs = new Collection();
+		
+		return $this;
+	}
+	
+	public function register(RouteBreadcrumb ...$breadcrumbs): Registry
+	{
+		foreach ($breadcrumbs as $breadcrumb) {
+			$this->breadcrumbs->put($breadcrumb->name, $breadcrumb);
+		}
 		
 		return $this;
 	}

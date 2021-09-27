@@ -3,9 +3,7 @@
 namespace Glhd\Gretel\Routing;
 
 use Glhd\Gretel\Breadcrumb;
-use Glhd\Gretel\Resolvers\ParentResolver;
-use Glhd\Gretel\Resolvers\TitleResolver;
-use Glhd\Gretel\Resolvers\UrlResolver;
+use Glhd\Gretel\Resolvers\Resolver;
 use Illuminate\Routing\Route;
 
 class RouteBreadcrumb extends Breadcrumb
@@ -14,16 +12,16 @@ class RouteBreadcrumb extends Breadcrumb
 	
 	public ?Route $route = null;
 	
-	/**
-	 * @param string|\Closure $title
-	 * @param string|\Closure|null $parent
-	 */
-	public function __construct(string $name, array $parameters, $title, $parent = null)
-	{
+	public function __construct(
+		string $name,
+		Resolver $title,
+		Resolver $parent,
+		Resolver $url
+	) {
 		$this->name = $name;
-		$this->title = TitleResolver::make($title, $parameters);
-		$this->parent = ParentResolver::make($parent, $parameters);
-		$this->url = new UrlResolver($name, $parameters);
+		$this->title = $title;
+		$this->parent = $parent;
+		$this->url = $url;
 	}
 	
 	public function setRoute(Route $route): self

@@ -3,6 +3,8 @@
 namespace Glhd\Gretel\Tests;
 
 use Glhd\Gretel\Breadcrumb;
+use Glhd\Gretel\Registry;
+use Glhd\Gretel\Support\Cache;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -10,18 +12,22 @@ use Illuminate\Support\Facades\Route;
 
 class RouteMacroTest extends TestCase
 {
-	public function test_macro_registers_new_breadcrumb(): void
+	/** @dataProvider cachingProvider */
+	public function test_macro_registers_new_breadcrumb(bool $cache): void
 	{
 		Route::get('/users', $this->action())
 			->name('users.index')
 			->breadcrumb('Users');
+		
+		$this->setUpCache($cache);
 		
 		$this->get('/users');
 		
 		$this->assertActiveBreadcrumbs(['Users', '/users']);
 	}
 	
-	public function test_full_parent_name_is_registered_directly(): void
+	/** @dataProvider cachingProvider */
+	public function test_full_parent_name_is_registered_directly(bool $cache): void
 	{
 		Route::get('/users', $this->action())
 			->name('users.index')
@@ -31,12 +37,15 @@ class RouteMacroTest extends TestCase
 			->name('users.create')
 			->breadcrumb('Add a User', 'users.index');
 		
+		$this->setUpCache($cache);
+		
 		$this->get('/users/create');
 		
 		$this->assertActiveBreadcrumbs(['Users', '/users'], ['Add a User', '/users/create']);
 	}
 	
-	public function test_parent_shorthand_syntax(): void
+	/** @dataProvider cachingProvider */
+	public function test_parent_shorthand_syntax(bool $cache): void
 	{
 		Route::get('/users', $this->action())
 			->name('users.index')
@@ -46,12 +55,15 @@ class RouteMacroTest extends TestCase
 			->name('users.create')
 			->breadcrumb('Add a User', '.index');
 		
+		$this->setUpCache($cache);
+		
 		$this->get('/users/create');
 		
 		$this->assertActiveBreadcrumbs(['Users', '/users'], ['Add a User', '/users/create']);
 	}
 	
-	public function test_dynamic_title_via_closure(): void
+	/** @dataProvider cachingProvider */
+	public function test_dynamic_title_via_closure(bool $cache): void
 	{
 		$user = User::factory()->create();
 		
@@ -60,12 +72,15 @@ class RouteMacroTest extends TestCase
 			->name('users.show')
 			->breadcrumb(fn(User $user) => $user->name);
 		
+		$this->setUpCache($cache);
+		
 		$this->get(route('users.show', $user));
 		
 		$this->assertActiveBreadcrumbs([$user->name, route('users.show', $user)]);
 	}
 	
-	public function test_nested_routes(): void
+	/** @dataProvider cachingProvider */
+	public function test_nested_routes(bool $cache): void
 	{
 		$user = User::factory()->create();
 		$note = Note::factory()->create(['user_id' => $user->id]);
@@ -80,6 +95,8 @@ class RouteMacroTest extends TestCase
 			->name('users.notes.show')
 			->breadcrumb(fn(User $user, Note $note) => $note->note, 'users.show');
 		
+		$this->setUpCache($cache);
+		
 		$this->get(route('users.notes.show', [$user, $note]));
 		
 		$this->assertActiveBreadcrumbs(
@@ -88,7 +105,8 @@ class RouteMacroTest extends TestCase
 		);
 	}
 	
-	public function test_shallow_nested_routes(): void
+	/** @dataProvider cachingProvider */
+	public function test_shallow_nested_routes(bool $cache): void
 	{
 		$user = User::factory()->create();
 		$note = Note::factory()->create(['user_id' => $user->id]);
@@ -110,6 +128,8 @@ class RouteMacroTest extends TestCase
 				fn(Note $note) => route('users.show', $note->author)
 			);
 		
+		$this->setUpCache($cache);
+		
 		$this->get(route('notes.show', $note));
 		$this->assertActiveBreadcrumbs(
 			['Users', '/users'],
@@ -129,7 +149,8 @@ class RouteMacroTest extends TestCase
 		);
 	}
 	
-	public function test_custom_parent(): void
+	/** @dataProvider cachingProvider */
+	public function test_custom_parent(bool $cache): void
 	{
 		$note = Note::factory()->create();
 		
@@ -143,11 +164,34 @@ class RouteMacroTest extends TestCase
 				}
 			);
 		
+		$this->setUpCache($cache);
+		
 		$this->get(route('notes.show', $note));
 		$this->assertActiveBreadcrumbs(
 			["Parent of {$note->id}", "/parent-{$note->id}"],
 			[$note->note, route('notes.show', $note)]
 		);
+	}
+	
+	public function cachingProvider(): array
+	{
+		return [
+			'Uncached' => [false],
+			'Cached' => [true],
+		];
+	}
+	
+	protected function setUpCache(bool $cache = true): self
+	{
+		if ($cache) {
+			$this->artisan('breadcrumbs:cache');
+			$this->app->make(Registry::class)->clear();
+			$this->app->make(Cache::class)->load();
+		} else {
+			$this->artisan('breadcrumbs:clear');
+		}
+		
+		return $this;
 	}
 	
 	/**
@@ -162,8 +206,8 @@ class RouteMacroTest extends TestCase
 		
 		foreach ($expectations as $index => [$title, $url]) {
 			$breadcrumb = $breadcrumbs[$index];
-			$this->assertEquals($title, $breadcrumb['title']);
-			$this->assertEquals(url($url), $breadcrumb['url']);
+			$this->assertEquals($title, $breadcrumb->title);
+			$this->assertEquals(url($url), $breadcrumb->url);
 		}
 		
 		return $this;

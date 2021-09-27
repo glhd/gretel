@@ -11,30 +11,25 @@ use Illuminate\Support\Arr;
 
 class UrlResolver extends Resolver
 {
-	protected string $name;
-	
-	public function __construct(string $name, array $parameters)
+	public static function makeForRoute(string $name, array $parameters): self
 	{
-		$this->name = $name;
+		$callback = function(Route $route) use ($name, $parameters) {
+			try {
+				return route($name, Arr::only($route->parameters(), $parameters));
+			} catch (UrlGenerationException $exception) {
+				throw self::exception($exception, $route, $name);
+			}
+		};
 		
-		parent::__construct(fn(Route $route) => $this->generateUrl($route), $parameters);
+		return static::make($callback, $parameters);
 	}
 	
-	protected function generateUrl(Route $route): string
-	{
-		try {
-			return route($this->name, Arr::only($route->parameters(), $this->parameters));
-		} catch (UrlGenerationException $exception) {
-			throw $this->exception($exception, $route);
-		}
-	}
-	
-	protected function exception(UrlGenerationException $exception, Route $route): Exception
+	protected static function exception(UrlGenerationException $exception, Route $route, string $name): Exception
 	{
 		// If the active route somehow doesn't have the parameters it needs, just
 		// re-throw the exception (this would only happen if the Breadcrumbs are requested
 		// outside of a typical Laravel request lifecycle).
-		if ($this->name === $route->getName()) {
+		if ($name === $route->getName()) {
 			return $exception;
 		}
 		

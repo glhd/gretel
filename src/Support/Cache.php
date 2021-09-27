@@ -3,8 +3,10 @@
 namespace Glhd\Gretel\Support;
 
 use Glhd\Gretel\Registry;
+use Glhd\Gretel\Resolvers\Resolver;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Str;
 
 class Cache
 {
@@ -58,29 +60,54 @@ class Cache
 	{
 		$breadcrumbs = $registry
 			->map(fn(RouteBreadcrumb $breadcrumb) => $this->exportBreadcrumb($breadcrumb))
-			->implode("\n\n");
+			->implode(",\n");
 		
 		$registry_class = Registry::class;
+		$breadcrumb_class = RouteBreadcrumb::class;
 		
 		return <<<PHP
 		<?php
 		
 		use {$registry_class};
+		use {$breadcrumb_class};
 		
-		\$registry = app(Registry::class);
-
+		app(Registry::class)->register(
 		{$breadcrumbs}
+		);
 		
 		PHP;
 	}
 	
 	protected function exportBreadcrumb(RouteBreadcrumb $breadcrumb): string
 	{
-		$serialized = var_export(serialize($breadcrumb), true);
+		$name = var_export($breadcrumb->name, true);
+		$title = $this->exportResolver($breadcrumb->title);
+		$parent = $this->exportResolver($breadcrumb->parent);
+		$url = $this->exportResolver($breadcrumb->url);
 		
 		return <<<PHP
-		// '{$breadcrumb->name}' route
-		\$registry->register(unserialize($serialized));
+			// '{$breadcrumb->name}'
+			new RouteBreadcrumb(
+				$name,
+				$title,
+				$parent,
+				$url
+			)
 		PHP;
+	}
+	
+	protected function exportResolver(Resolver $resolver): string
+	{
+		[$parameters, $callback] = $resolver->exportForSerialization();
+		
+		$parameters = empty($parameters)
+			? '[]'
+			: var_export($parameters, true);
+		
+		$callback = var_export($callback, true);
+		
+		$fqcn = get_class($resolver);
+		
+		return "new \\{$fqcn}({$callback}, {$parameters})";
 	}
 }

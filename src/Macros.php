@@ -3,6 +3,9 @@
 namespace Glhd\Gretel;
 
 use Glhd\Gretel\Exceptions\UnnamedRouteException;
+use Glhd\Gretel\Resolvers\ParentResolver;
+use Glhd\Gretel\Resolvers\TitleResolver;
+use Glhd\Gretel\Resolvers\UrlResolver;
 use Glhd\Gretel\Routing\Breadcrumbs;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
@@ -31,9 +34,12 @@ class Macros
 		
 		$name = $route->getName();
 		$parameters = $route->parameterNames();
-		$parent = static::resolveParent($registry, $name, $parent);
 		
-		$registry->register(new RouteBreadcrumb($name, $parameters, $title, $parent));
+		$title = TitleResolver::make($title, $parameters);
+		$parent = ParentResolver::make(static::resolveParent($registry, $name, $parent), $parameters);
+		$url = UrlResolver::makeForRoute($name, $parameters);
+		
+		$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
 		
 		return $route;
 	}

@@ -5,24 +5,28 @@ namespace Glhd\Gretel\Resolvers;
 use Closure;
 use Glhd\Gretel\Registry;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ReflectsClosures;
+use InvalidArgumentException;
 use Opis\Closure\SerializableClosure;
 
 class Resolver
 {
 	use ReflectsClosures;
 	
-	/**
-	 * Because of the way closure serialization happens, this can't be type hinted.
-	 * 
-	 * @var SerializableClosure
-	 */
-	protected $callback;
+	protected ?Closure $callback = null;
 	
-	protected array $parameters;
+	protected ?string $serialized = null;
+	
+	public array $parameters;
 	
 	public static function make($value, array $parameters = []): self
 	{
+		// If the value is already a resolver, no need to do anything
+		if ($value instanceof self) {
+			return $value;
+		}
+		
 		// If value is a closure, we'll use late static binding
 		if ($value instanceof Closure) {
 			return new static($value, $parameters);
@@ -32,9 +36,19 @@ class Resolver
 		return new self(fn() => $value, $parameters);
 	}
 	
-	public function __construct(Closure $callback, array $parameters)
+	/**
+	 * @var \Closure|string $callback
+	 */
+	public function __construct($callback, array $parameters)
 	{
-		$this->callback = new SerializableClosure($callback);
+		if ($callback instanceof Closure) {
+			$this->callback = $callback;
+		} elseif ($this->isSerializedClosure($callback)) {
+			$this->serialized = $callback;
+		} else {
+			throw new InvalidArgumentException('Resolver callbacks must be a Closure or a serialized closure.');
+		}
+		
 		$this->parameters = $parameters;
 	}
 	
@@ -43,11 +57,43 @@ class Resolver
 	 */
 	public function resolve(Route $route, Registry $registry)
 	{
-		return call_user_func_array($this->callback->getClosure(), $this->resolveParameters($route, $registry));
+		return call_user_func_array($this->getClosure(), $this->resolveParameters($route, $registry));
+	}
+	
+	public function getClosure(): Closure
+	{
+		if (null !== $this->serialized) {
+			$callback = unserialize($this->serialized, ['allow_classes' => true]);
+			if ($callback instanceof SerializableClosure) {
+				$this->callback = $callback->getClosure();
+				$this->serialized = null;
+			}
+		}
+		
+		return $this->callback;
+	}
+	
+	public function exportForSerialization(): array
+	{
+		if (null === $this->serialized) {
+			$callback = $this->callback;
+			
+			$this->callback = null;
+			$this->serialized = serialize(new SerializableClosure($callback));
+		}
+		
+		return [$this->parameters, $this->serialized];
 	}
 	
 	protected function resolveParameters(Route $route, Registry $registry): array
 	{
 		return array_values($route->parameters());
+	}
+	
+	protected function isSerializedClosure($value): bool
+	{
+		$fragment = 'C:'.strlen(SerializableClosure::class).':"'.SerializableClosure::class;
+		
+		return is_string($value) && Str::startsWith($value, $fragment);
 	}
 }
