@@ -6,7 +6,6 @@ use Closure;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Support\BindsClosures;
 use Illuminate\Support\Str;
-use Illuminate\Support\Traits\ReflectsClosures;
 use InvalidArgumentException;
 use Opis\Closure\SerializableClosure;
 

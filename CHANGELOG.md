@@ -7,6 +7,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [0.0.1]
 
+### Added
+
+- Initial release
+
 # Keep a Changelog Syntax
 
 - `Added` for new features.
@@ -17,4 +21,4 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 - `Security` in case of vulnerabilities.
 
 [Unreleased]: https://github.com/glhd/gretel/compare/0.0.1...HEAD
-[0.0.1]: https://github.com/glhd/gretel/compare/0.0.0...0.0.1
+[0.0.1]: https://github.com/glhd/gretel/releases/tag/0.0.1
