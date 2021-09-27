@@ -14,7 +14,6 @@ use Illuminate\Foundation\Application;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Str;
 use Illuminate\View\Compilers\BladeCompiler;
 
 class GretelServiceProvider extends ServiceProvider
@@ -30,8 +29,6 @@ class GretelServiceProvider extends ServiceProvider
 	
 	public function boot()
 	{
-		require_once __DIR__.'/helpers.php';
-		
 		$this->bootConfig();
 		$this->bootViews();
 		$this->bootBladeComponents();
@@ -77,7 +74,7 @@ class GretelServiceProvider extends ServiceProvider
 		if (method_exists($this->app, 'resourcePath')) {
 			$this->publishes([
 				$views_directory => $this->app->resourcePath('views/vendor/gretel'),
-			], 'gretel-views');
+			], ['gretel', 'gretel-views']);
 		}
 		
 		return $this;
@@ -86,7 +83,6 @@ class GretelServiceProvider extends ServiceProvider
 	protected function bootBladeComponents(): self
 	{
 		$this->callAfterResolving(BladeCompiler::class, function() {
-			Blade::componentNamespace(Str::beforeLast(BreadcrumbComponent::class, '\\'), 'gretel');
 			Blade::component(BreadcrumbComponent::class, 'breadcrumbs');
 		});
 		
@@ -98,7 +94,7 @@ class GretelServiceProvider extends ServiceProvider
 		if (method_exists($this->app, 'configPath')) {
 			$this->publishes([
 				"{$this->base_dir}/config.php" => $this->app->configPath('gretel.php'),
-			], 'gretel-config');
+			], ['gretel', 'gretel-config']);
 		}
 		
 		return $this;

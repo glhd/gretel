@@ -23,22 +23,20 @@ class ParentResolver extends Resolver
 				$parent = $value;
 			}
 			
-			if (config('gretel.static_closures')) {
-				$relation = $relation->bindTo(null);
-				
-				if ($parent instanceof Closure) {
-					$parent = $parent->bindTo(null);
-				}
+			$relation = static::optimizeBinding($relation);
+			
+			if ($parent instanceof Closure) {
+				$parent = static::optimizeBinding($parent);
 			}
 			
 			$value = static function($parameters) use ($parent, $relation) {
+				$parameters = array_values($parameters);
+				
 				if ($parent instanceof Closure) {
-					$parent = clone call_user_func_array($parent, array_values($parameters));
+					$parent = clone $parent(...$parameters);
 				}
 				
-				$result = Arr::wrap(call_user_func_array($relation, array_values($parameters)));
-				
-				return $parent->setParameters($result);
+				return $parent->setParameters(Arr::wrap($relation(...$parameters)));
 			};
 		} elseif ($value instanceof Closure) {
 			// If we're been passed a closure, we need to pass the parameters
@@ -57,9 +55,13 @@ class ParentResolver extends Resolver
 		$result = parent::resolve($parameters, $registry);
 		
 		if (is_string($result)) {
+			// If we get back a URL, we'll try to resolve the parent via the Router
 			if (filter_var($result, FILTER_VALIDATE_URL)) {
 				return $this->findParentByUrl($result, $registry);
 			}
+			
+			// If we get back a route name, we'll load it from the registry and pass
+			// on any custom parameters that were provided
 			if ($registry->has($result)) {
 				$parent = clone $registry->getOrFail($result);
 				return $parent->setParameters($parameters);

@@ -4,6 +4,7 @@ namespace Glhd\Gretel\Resolvers;
 
 use Closure;
 use Glhd\Gretel\Registry;
+use Glhd\Gretel\Support\BindsClosures;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ReflectsClosures;
 use InvalidArgumentException;
@@ -11,7 +12,7 @@ use Opis\Closure\SerializableClosure;
 
 class Resolver
 {
-	use ReflectsClosures;
+	use BindsClosures;
 	
 	public array $parameters;
 	
@@ -41,10 +42,7 @@ class Resolver
 	public function __construct($callback, array $parameters)
 	{
 		if ($callback instanceof Closure) {
-			$this->callback = $callback;
-			if (config('gretel.static_closures')) {
-				$this->callback = $this->callback->bindTo(null);
-			}
+			$this->callback = static::optimizeBinding($callback);
 		} elseif ($this->isSerializedClosure($callback)) {
 			$this->serialized = $callback;
 		} else {
