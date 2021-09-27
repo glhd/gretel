@@ -15,10 +15,10 @@ class Macros
 {
 	public static function register(Registry $registry): void
 	{
-		Route::macro('breadcrumb', function($title = null, $parent = null) use ($registry) {
+		Route::macro('breadcrumb', function($title = null, $parent = null, $relation = null) use ($registry) {
 			return 0 === func_num_args()
 				? Macros::breadcrumbs($registry, $this)
-				: Macros::breadcrumb($registry, $this, $title, $parent);
+				: Macros::breadcrumb($registry, $this, $title, $parent, $relation);
 		});
 		
 		Route::macro('breadcrumbs', function() use ($registry) {
@@ -26,8 +26,13 @@ class Macros
 		});
 	}
 	
-	public static function breadcrumb(Registry $registry, Route $route, $title, $parent = null): Route
-	{
+	public static function breadcrumb(
+		Registry $registry,
+		Route $route,
+		$title,
+		$parent = null,
+		$relation = null
+	): Route {
 		if (!$route->getName()) {
 			throw new UnnamedRouteException();
 		}
@@ -36,7 +41,7 @@ class Macros
 		$parameters = $route->parameterNames();
 		
 		$title = TitleResolver::make($title, $parameters);
-		$parent = ParentResolver::make(static::resolveParent($registry, $name, $parent), $parameters);
+		$parent = ParentResolver::makeWithRelation(static::resolveParent($registry, $name, $parent), $parameters, $relation);
 		$url = UrlResolver::makeForRoute($name, $parameters);
 		
 		$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
@@ -59,6 +64,6 @@ class Macros
 			$parent = Str::beforeLast($name, '.').$parent;
 		}
 		
-		return $registry->get($parent);
+		return $registry->getOrFail($parent);
 	}
 }

@@ -82,14 +82,9 @@ class Breadcrumbs implements Arrayable, Jsonable
 	
 	protected function resolve($value, Breadcrumb $breadcrumb)
 	{
-		$route = $this->route;
-		
-		if ($breadcrumb instanceof RouteBreadcrumb && $breadcrumb->route) {
-			$route = $breadcrumb->route;
-		}
-		
 		if ($value instanceof Resolver) {
-			return $value->resolve($route, $this->registry);
+			$parameters = $breadcrumb->parameters ?? $this->route->parameters();
+			return $value->resolve($parameters, $this->registry);
 		}
 		
 		return $value;

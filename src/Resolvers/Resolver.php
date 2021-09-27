@@ -4,7 +4,6 @@ namespace Glhd\Gretel\Resolvers;
 
 use Closure;
 use Glhd\Gretel\Registry;
-use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\ReflectsClosures;
 use InvalidArgumentException;
@@ -55,9 +54,9 @@ class Resolver
 	/**
 	 * @return \Glhd\Gretel\Breadcrumb|string
 	 */
-	public function resolve(Route $route, Registry $registry)
+	public function resolve(array $parameters, Registry $registry)
 	{
-		return call_user_func_array($this->getClosure(), $this->resolveParameters($route, $registry));
+		return call_user_func_array($this->getClosure(), $this->transformParameters($parameters, $registry));
 	}
 	
 	public function getClosure(): Closure
@@ -85,9 +84,9 @@ class Resolver
 		return [$this->parameters, $this->serialized];
 	}
 	
-	protected function resolveParameters(Route $route, Registry $registry): array
+	protected function transformParameters(array $parameters, Registry $registry): array
 	{
-		return array_values($route->parameters());
+		return array_values($parameters);
 	}
 	
 	protected function isSerializedClosure($value): bool

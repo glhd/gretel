@@ -12,6 +12,20 @@ use Illuminate\Support\Facades\Route;
 
 class RouteMacroTest extends TestCase
 {
+	protected User $user;
+	
+	protected Note $note;
+	
+	protected function setUp(): void
+	{
+		parent::setUp();
+		
+		$this->user = User::factory()->create();
+		$this->note = Note::factory()->create(['user_id' => $this->user->id]);
+		
+		$this->artisan('breadcrumbs:clear');
+	}
+	
 	/** @dataProvider cachingProvider */
 	public function test_macro_registers_new_breadcrumb(bool $cache): void
 	{
@@ -65,8 +79,6 @@ class RouteMacroTest extends TestCase
 	/** @dataProvider cachingProvider */
 	public function test_dynamic_title_via_closure(bool $cache): void
 	{
-		$user = User::factory()->create();
-		
 		Route::get('/users/{user}', fn(User $user) => 'OK')
 			->middleware(SubstituteBindings::class)
 			->name('users.show')
@@ -74,17 +86,14 @@ class RouteMacroTest extends TestCase
 		
 		$this->setUpCache($cache);
 		
-		$this->get(route('users.show', $user));
+		$this->get(route('users.show', $this->user));
 		
-		$this->assertActiveBreadcrumbs([$user->name, route('users.show', $user)]);
+		$this->assertActiveBreadcrumbs([$this->user->name, route('users.show', $this->user)]);
 	}
 	
 	/** @dataProvider cachingProvider */
 	public function test_nested_routes(bool $cache): void
 	{
-		$user = User::factory()->create();
-		$note = Note::factory()->create(['user_id' => $user->id]);
-		
 		Route::get('/users/{user}', fn(User $user) => 'OK')
 			->middleware(SubstituteBindings::class)
 			->name('users.show')
@@ -97,20 +106,77 @@ class RouteMacroTest extends TestCase
 		
 		$this->setUpCache($cache);
 		
-		$this->get(route('users.notes.show', [$user, $note]));
+		$this->get(route('users.notes.show', [$this->user, $this->note]));
 		
 		$this->assertActiveBreadcrumbs(
-			[$user->name, route('users.show', $user)],
-			[$note->note, route('users.notes.show', [$user, $note])]
+			[$this->user->name, route('users.show', $this->user)],
+			[$this->note->note, route('users.notes.show', [$this->user, $this->note])]
 		);
 	}
 	
 	/** @dataProvider cachingProvider */
-	public function test_shallow_nested_routes(bool $cache): void
+	public function test_shallow_nested_routes_via_configuration(bool $cache): void
 	{
-		$user = User::factory()->create();
-		$note = Note::factory()->create(['user_id' => $user->id]);
+		Route::get('/users', fn(User $user) => 'OK')
+			->name('users.index')
+			->breadcrumb('Users');
 		
+		Route::get('/users/{user}', fn(User $user) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('users.show')
+			->breadcrumb(fn(User $user) => $user->name, '.index');
+		
+		Route::get('/notes/{note}', fn(Note $note) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('notes.show')
+			->breadcrumb(fn(Note $note) => $note->note, 'users.show', ['user' => 'author']);
+		
+		$this->setUpCache($cache);
+		
+		$this->get(route('notes.show', $this->note));
+		$this->assertActiveBreadcrumbs(
+			['Users', '/users'],
+			[$this->user->name, route('users.show', $this->user)],
+			[$this->note->note, route('notes.show', $this->note)]
+		);
+		
+		// We also want to test that the forced binding of 'users.show' to a different
+		// set of route parameters doesn't break subsequent calls to that route in a
+		// different context.
+		
+		$user2 = User::factory()->create();
+		$this->get(route('users.show', $user2));
+		$this->assertActiveBreadcrumbs(
+			['Users', '/users'],
+			[$user2->name, route('users.show', $user2)],
+		);
+	}
+	
+	/** @dataProvider cachingProvider */
+	public function test_shallow_nested_routes_via_configuration_shorthand(bool $cache): void
+	{
+		Route::get('/authors/{author}', fn(User $author) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('authors.show')
+			->breadcrumb(fn(User $author) => $author->name);
+		
+		Route::get('/notes/{note}', fn(Note $note) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('notes.show')
+			->breadcrumb(fn(Note $note) => $note->note, 'authors.show', 'author');
+		
+		$this->setUpCache($cache);
+		
+		$this->get(route('notes.show', $this->note));
+		$this->assertActiveBreadcrumbs(
+			[$this->user->name, route('authors.show', $this->user)],
+			[$this->note->note, route('notes.show', $this->note)]
+		);
+	}
+	
+	/** @dataProvider cachingProvider */
+	public function test_shallow_nested_routes_via_callback(bool $cache = true): void
+	{
 		Route::get('/users', fn(User $user) => 'OK')
 			->name('users.index')
 			->breadcrumb('Users');
@@ -125,16 +191,17 @@ class RouteMacroTest extends TestCase
 			->name('notes.show')
 			->breadcrumb(
 				fn(Note $note) => $note->note,
-				fn(Note $note) => route('users.show', $note->author)
+				'users.show',
+				fn(Note $note) => ['user' => $note->author]
 			);
 		
 		$this->setUpCache($cache);
 		
-		$this->get(route('notes.show', $note));
+		$this->get(route('notes.show', $this->note));
 		$this->assertActiveBreadcrumbs(
 			['Users', '/users'],
-			[$user->name, route('users.show', $user)],
-			[$note->note, route('notes.show', $note)]
+			[$this->user->name, route('users.show', $this->user)],
+			[$this->note->note, route('notes.show', $this->note)]
 		);
 		
 		// We also want to test that the forced binding of 'users.show' to a different

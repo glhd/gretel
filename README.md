@@ -99,7 +99,7 @@ breadcrumbs for `users.show` it will also show the breadcrumb for `users.index`.
 
 Gretel assumes that the parameters in nested routes can be safely used for their parent routes. In this example,
 `users.edit` will render the `users.show` breadcrumb using the `User` value that was resolved for the edit action.
-In the vast majority of cases, this is exactly what you want. If not, you can override this behavior ([see below](#fully-custom-parent)).
+In the vast majority of cases, this is exactly what you want. If not, you can override this behavior ([see below](#shallow-nested-routes)).
 
 ##### Parent Shorthand
 
@@ -117,57 +117,58 @@ This is particularly useful for large apps that have many deeply nested routes.
 #### Shallow Nested Routes
 
 If your nested routes do not contain the route parameters necessary for the parent route, you will need
-to provide the parent route directly to Gretel. You can do this using the Laravel `route` helper:
+to provide the values to Gretel. You can do this using a third callback:
 
 ```php
 Route::get('/companies/{company}', [CompanyController::class, 'show'])
   ->name('companies.show')
   ->breadcrumb(fn(Company $company) => $company->name);
-  
+
 Route::get('/users/{user}', [UserController::class, 'show'])
   ->name('users.show')
   ->breadcrumb(
-    fn(User $user) => $user->name,
-    fn(User $user) => route('companies.show', $user->company)
+    fn(User $user) => $user->name, 
+    'companies.show', 
+    fn(User $user) => ['company' => $user->company]
   );
 ```
 
 ![Shallow Nested Example](https://user-images.githubusercontent.com/21592/134791638-fbb87040-e27f-4749-9175-0f5dce995924.png)
 
-#### Fully Custom Parent
-
-Sometimes you may want to fully customize a route's parent. In this case, Gretel gives you a special
-“escape hatch” that you can use for full control. Simple type-hint the `Breadcrumb` type as your first
-closure argument to get full control over the parent:
+Because you're usually just pulling a relation off the child model, Gretel provides a shorthand
+to make it easier. The keys should be the route parameter used in the parent route (in our example,
+the parent is `/companies/{company}` so we would use `company` for the key), and the value should be 
+the relationship name on the child (in our example, `$user->company`, so `company` for the value as well).
 
 ```php
-Route::get('/inbound-links/{link}', [InboundLinkController::class, 'show'])
-  ->name('inbound-links.show')
+Route::get('/users/{user}', [UserController::class, 'show'])
+  ->name('users.show')
   ->breadcrumb(
-    'Inbound Link Details',
-    function(Breadcrumb $breadcrumb, InboundLink $link) {
-      $breadcrumb->setTitle($link->source_page_title);
-      $breadcrumb->setUrl($link->source_page_url);
-    }
+    fn(User $user) => $user->name, 
+    'companies.show', 
+    ['company' => 'company']
   );
 ```
 
-##### Callable Shorthand
-
-The `Breadcrumb` object is callable which lets you define the title and URL in one quick call:
+If the relationship name and the route parameter name are the same, you can skip the key:
 
 ```php
-Route::get('/inbound-links/{link}', [InboundLinkController::class, 'show'])
-  ->name('inbound-links.show')
+Route::get('/users/{user}', [UserController::class, 'show'])
+  ->name('users.show')
   ->breadcrumb(
-    'Inbound Link Details',
-    fn(Breadcrumb $breadcrumb, InboundLink $link) {
-      $breadcrumb($link->source_page_title, $link->source_page_url);
-    }
+    fn(User $user) => $user->name, 
+    'companies.show', 
+    ['company']
   );
 ```
 
-![Fully Custom Example](https://user-images.githubusercontent.com/21592/134791639-84436e1e-6ed3-4ed3-8069-b29ca730a18d.png)
+And if the parent relationship only requires one parameter, you can skip the array, as well:
+
+```php
+Route::get('/users/{user}', [UserController::class, 'show'])
+  ->name('users.show')
+  ->breadcrumb(fn(User $user) => $user->name, 'companies.show', 'company');
+```
 
 ### Displaying Breadcrumbs
 

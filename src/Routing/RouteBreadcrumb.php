@@ -24,13 +24,6 @@ class RouteBreadcrumb extends Breadcrumb
 		$this->url = $url;
 	}
 	
-	public function setRoute(Route $route): self
-	{
-		$this->route = $route;
-		
-		return $this;
-	}
-	
 	public function __sleep()
 	{
 		return ['name', 'title', 'parent', 'url'];
