@@ -24,6 +24,7 @@ class Breadcrumbs extends Component
 		RouteBreadcrumbs $breadcrumbs,
 		Repository $config,
 		string $framework = null,
+		string $view = null,
 		bool $jsonLd = false,
 		bool $throwIfMissing = false
 	) {
@@ -31,7 +32,9 @@ class Breadcrumbs extends Component
 		$this->config = $config;
 		$this->throw = $throwIfMissing;
 		
-		if ($jsonLd) {
+		if ($view) {
+			$this->view = $view;
+		} elseif ($jsonLd) {
 			$this->view = 'gretel::json-ld';
 		} elseif ($framework) {
 			$this->view = "gretel::{$framework}";

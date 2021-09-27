@@ -142,6 +142,23 @@ accepts a few optional attributes:
 | `framework`        | Render to match a UI framework (`"tailwind"` by default)                            |
 | `jsonld`           | Render as a JSON-LD `<script>` tag                                                  |
 
+#### Supported Frameworks
+
+Gretel supports most common CSS frameworks. We've taken the CSS framework's documented markup and
+added additional `aria-` tags where appropriate for better accessibility. Currently supported frameworks:
+
+- [Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
+- [Bootstrap 3](https://getbootstrap.com/docs/3.3/components/#breadcrumbs) use `"bootstrap3"`
+- [Bootstrap 4](https://getbootstrap.com/docs/4.6/components/breadcrumb/) use `"bootstrap4"`
+- [Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
+- [Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
+- [Foundation 5](https://get.foundation/sites/docs-v5/components/breadcrumbs.html) use `"foundation5"`
+- [Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
+- [Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
+- [Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
+- [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
+- [UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
+
 You'll typically want to include the `<x-breadcrumbs />` tag somewhere in your application layout 
 (maybe twice if you're using JSON-LD):
 
@@ -160,6 +177,41 @@ You'll typically want to include the `<x-breadcrumbs />` tag somewhere in your a
 </div>
 </body>
 </html>
+```
+
+#### Custom Breadcrumb View
+
+You can render a custom view either by publishing the `gretel.php` config file via
+`php artisan vendor:publish` or by passing a `view` attribute to the Blade component:
+
+```html
+<x-breadcrumbs view="app.breadcrumbs" />
+```
+
+##### Accessibility
+
+If you choose to render your own view, please be sure to follow the current
+[WAI-ARIA accessibility best practices](https://www.w3.org/TR/wai-aria-practices-1.1/examples/breadcrumb/index.html).
+Generally, this comes down to:
+
+```html
+<!-- Wrap your breadcrumbs in a <nav> element with an aria-label attribute -->
+<nav aria-label="Breadcrumb">
+  <!-- Use an <ol> (ordered list) for the breadcrumb items -->
+  <ol>
+    <li>
+      <a href="/">
+        Home
+      </a>
+    </li>
+    <li>
+      <!-- apply aria-current="page" to the current page -->
+      <a href="/users" aria-current="page">
+        Users
+      </a>
+    </li>
+  </ol>
+</nav>
 ```
 
 ### Caching Breadcrumbs

@@ -7,7 +7,7 @@
 						<a
 							href="{{ $breadcrumb->url }}"
 							class="text-gray-500 hover:text-gray-800"
-							aria-current="{{ $loop->last ? 'location' : 'false' }}"
+							aria-current="{{ $loop->last ? 'page' : 'false' }}"
 						>
 							{{ $breadcrumb->title }}
 						</a>
