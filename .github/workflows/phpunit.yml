@@ -51,7 +51,7 @@ jobs:
       - name: Install dependencies
         env:
           COMPOSER_DISCARD_CHANGES: true
-        run: composer require --no-suggest --no-progress --no-interaction --prefer-dist --update-with-all-dependencies "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}"
+        run: composer require --no-suggest --no-progress --no-interaction --prefer-dist --update-with-all-dependencies "laravel/framework:${{ matrix.laravel }}"
 
       - name: Set dependency version
         env:
