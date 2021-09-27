@@ -13,11 +13,8 @@ jobs:
     strategy:
       matrix:
         php: [ 8.0, 7.4 ]
-        laravel: [ ^8.0 ]
+        laravel: [ ^8.12 ]
         dependency-version: [ lowest, stable ]
-        include:
-          - php: 8.0
-            laravel: ^8.12
 
     name: "${{ matrix.php }} / ${{ matrix.laravel }} (${{ matrix.dependency-version }})"
 
