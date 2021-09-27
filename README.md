@@ -126,11 +126,7 @@ Route::get('/companies/{company}', [CompanyController::class, 'show'])
 
 Route::get('/users/{user}', [UserController::class, 'show'])
   ->name('users.show')
-  ->breadcrumb(
-    fn(User $user) => $user->name, 
-    'companies.show', 
-    fn(User $user) => ['company' => $user->company]
-  );
+  ->breadcrumb(fn(User $user) => $user->name, 'companies.show', fn(User $user) => $user->company);
 ```
 
 ![Shallow Nested Example](https://user-images.githubusercontent.com/21592/134791638-fbb87040-e27f-4749-9175-0f5dce995924.png)
