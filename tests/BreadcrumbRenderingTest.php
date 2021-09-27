@@ -2,9 +2,7 @@
 
 namespace Glhd\Gretel\Tests;
 
-use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
-use Glhd\Gretel\Routing\Breadcrumbs;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;

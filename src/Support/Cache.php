@@ -6,7 +6,6 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\Resolver;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Filesystem\Filesystem;
-use Illuminate\Support\Str;
 
 class Cache
 {

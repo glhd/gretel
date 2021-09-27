@@ -45,7 +45,7 @@
     ]
   },
   "hooks": {
-    "pre-commit": "[ -f vendor/bin/php-cs-fixer ] && ./vendor/bin/php-cs-fixer fix --diff"
+    "pre-commit": "[ -f vendor/bin/php-cs-fixer ] && ./bin/pre-commit.sh"
   },
   "extra": {
     "laravel": {
