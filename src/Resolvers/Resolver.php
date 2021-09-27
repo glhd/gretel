@@ -42,6 +42,9 @@ class Resolver
 	{
 		if ($callback instanceof Closure) {
 			$this->callback = $callback;
+			if (config('gretel.static_closures')) {
+				$this->callback->bindTo(null);
+			}
 		} elseif ($this->isSerializedClosure($callback)) {
 			$this->serialized = $callback;
 		} else {

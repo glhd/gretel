@@ -51,6 +51,9 @@ class ParentResolver extends Resolver
 				return $parent->setParameters($parameters);
 			};
 		} else {
+			if (config('gretel.static_closures')) {
+				$relation->bindTo(null);
+			}
 			$callback = static function($parameters) use ($parent, $relation) {
 				$result = call_user_func_array($relation, array_values($parameters));
 				return $parent->setParameters($result);
