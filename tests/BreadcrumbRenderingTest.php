@@ -63,8 +63,6 @@ class BreadcrumbRenderingTest extends TestCase
 		
 		$result = $this->get(route('notes.show', [$this->user, $this->note]))
 			->assertOk();
-		
-		echo $result->getOriginalContent();
 	}
 	
 	public function test_throw_when_no_breadcrumbs_match(): void
