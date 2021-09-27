@@ -6,69 +6,64 @@ use Closure;
 use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Exceptions\UnmatchedRouteException;
 use Glhd\Gretel\Registry;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use InvalidArgumentException;
+use Illuminate\Support\Arr;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ParentResolver extends Resolver
 {
-	public static function makeWithRelation($value, array $parameters = [], $relation = null): Resolver
+	public static function makeWithRelation($value, array $parameters = [], Closure $relation = null): Resolver
 	{
-		if (null === $relation) {
-			return parent::make($value, $parameters);
-		}
-		
-		if (!is_string($relation) && !is_array($relation) && !$relation instanceof Closure) {
-			throw new InvalidArgumentException('Invalid parent relation (expecting string, array, or Closure).');
-		}
-		
-		if (!$value instanceof Breadcrumb) {
-			throw new InvalidArgumentException('Unable to find parent breadcrumb.');
-		}
-		
-		$parent = clone $value;
-		
-		if (is_string($relation)) {
-			$relation = [$relation => $relation];
-		}
-		
-		if (is_array($relation)) {
-			$callback = static function($parameters) use ($parent, $relation) {
-				$child = collect($parameters)->first(fn($parameter) => $parameter instanceof Model);
-				$parameters = collect($relation)
-					->mapWithKeys(function($relation, $parameter) use ($child) {
-						if (is_int($parameter)) {
-							$parameter = $relation;
-						}
-						return [$parameter => $child->{$relation}];
-					})
-					->merge($parameters)
-					->all();
-				
-				return $parent->setParameters($parameters);
-			};
-		} else {
+		if ($relation) {
+			if ($value instanceof Breadcrumb) {
+				$parent = clone $value;
+			} else {
+				$parent = $value;
+			}
+			
 			if (config('gretel.static_closures')) {
 				$relation = $relation->bindTo(null);
+				
+				if ($parent instanceof Closure) {
+					$parent = $parent->bindTo(null);
+				}
 			}
-			$callback = static function($parameters) use ($parent, $relation) {
-				$result = call_user_func_array($relation, array_values($parameters));
+			
+			$value = static function($parameters) use ($parent, $relation) {
+				if ($parent instanceof Closure) {
+					$parent = clone call_user_func_array($parent, array_values($parameters));
+				}
+				
+				$result = Arr::wrap(call_user_func_array($relation, array_values($parameters)));
+				
 				return $parent->setParameters($result);
+			};
+		} elseif ($value instanceof Closure) {
+			// If we're been passed a closure, we need to pass the parameters
+			// in as individual arguments.
+			$original = $value;
+			$value = static function($parameters) use ($original) {
+				return call_user_func_array($original, array_values($parameters));
 			};
 		}
 		
-		return parent::make($callback, $parameters);
+		return parent::make($value, $parameters);
 	}
 	
 	public function resolve(array $parameters, Registry $registry)
 	{
 		$result = parent::resolve($parameters, $registry);
 		
-		if (is_string($result) && filter_var($result, FILTER_VALIDATE_URL)) {
-			return $this->findParentByUrl($result, $registry);
+		if (is_string($result)) {
+			if (filter_var($result, FILTER_VALIDATE_URL)) {
+				return $this->findParentByUrl($result, $registry);
+			}
+			if ($registry->has($result)) {
+				$parent = clone $registry->getOrFail($result);
+				return $parent->setParameters($parameters);
+			}
 		}
 		
 		if (!($result instanceof Breadcrumb)) {
@@ -80,19 +75,6 @@ class ParentResolver extends Resolver
 	
 	protected function transformParameters(array $parameters, Registry $registry): array
 	{
-		// If they've type hinted a Breadcrumb argument, we'll prepend that
-		// to the arguments we're going to call the closure with. This means
-		// that the simple case of `breadcrumb(fn(User $user) => $user->name)`
-		// will work (the majority of cases), but a `Breadcrumb` typehint can
-		// be used to can more control if necessary.
-		try {
-			if (Breadcrumb::class === $this->firstClosureParameterType($this->callback)) {
-				return [new Breadcrumb(), ...array_values($parameters)];
-			}
-		} catch (RuntimeException $exception) {
-			// If closure has no parameters, then we don't need to inject the Breadcrumb
-		}
-		
 		return [$parameters];
 	}
 	

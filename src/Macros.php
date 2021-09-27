@@ -2,6 +2,7 @@
 
 namespace Glhd\Gretel;
 
+use Closure;
 use Glhd\Gretel\Exceptions\UnnamedRouteException;
 use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
@@ -31,7 +32,7 @@ class Macros
 		Route $route,
 		$title,
 		$parent = null,
-		$relation = null
+		Closure $relation = null
 	): Route {
 		if (!$route->getName()) {
 			throw new UnnamedRouteException();
@@ -41,8 +42,10 @@ class Macros
 		$parameters = $route->parameterNames();
 		
 		$title = TitleResolver::make($title, $parameters);
-		$parent = ParentResolver::makeWithRelation(static::resolveParent($registry, $name, $parent), $parameters, $relation);
 		$url = UrlResolver::makeForRoute($name, $parameters);
+		
+		$parent = static::resolveParent($registry, $name, $parent);
+		$parent = ParentResolver::makeWithRelation($parent, $parameters, $relation);
 		
 		$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
 		
@@ -56,6 +59,13 @@ class Macros
 	
 	protected static function resolveParent(Registry $registry, string $name, $parent)
 	{
+		if ($parent instanceof Closure) {
+			return static function(...$args) use ($name, $parent) {
+				$result = $parent(...$args);
+				return Macros::resolveParent(app(Registry::class), $name, $result);
+			};
+		}
+		
 		if (!is_string($parent)) {
 			return $parent;
 		}
