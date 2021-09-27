@@ -6,6 +6,7 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Support\Cache;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
+use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
 
@@ -27,28 +28,45 @@ class ConsoleCommandTest extends TestCase
 		});
 	}
 	
-	public function test_cache_command(): void
+	public function test_cache_and_clear_commands(): void
 	{
+		$cache = $this->app->make(Cache::class);
+		
 		$this->artisan('breadcrumbs:cache')
 			->expectsOutput('Breadcrumbs cached successfully!')
 			->assertExitCode(0);
 		
+		$this->assertFileExists($cache->path());
+		
 		// Clear existing registry and re-load from cache
 		$this->app->forgetInstance(Registry::class);
-		$this->app->make(Cache::class)->load();
+		$cache->load();
 		
 		$registry = $this->app->make(Registry::class);
 		
-		dd($registry->get('users.index')); // FIXME
+		$this->assertEquals(6, $registry->count());
+		$this->assertTrue($registry->has('home'));
+		$this->assertTrue($registry->has('users.index'));
+		$this->assertTrue($registry->has('users.create'));
+		$this->assertTrue($registry->has('users.show'));
+		$this->assertTrue($registry->has('notes.index'));
+		$this->assertTrue($registry->has('notes.show'));
+		
+		$this->artisan('breadcrumbs:clear');
+		$this->assertFileNotExists($cache->path());
 	}
 	
-	public function test_cache_command_triggers_error_if_routes_are_cached(): void
+	public function test_cache_command_triggers_error_if_routes_are_already_cached(): void
 	{
-		$this->artisan('route:cache');
+		$fs = new Filesystem();
+		$cached_routes_path = $this->app->getCachedRoutesPath();
 		
-		$this->artisan('breadcrumbs:cache')
-			->assertExitCode(1);
-		
-		$this->artisan('route:clear');
+		try {
+			$fs->put($cached_routes_path, '');
+			$this->artisan('breadcrumbs:cache')->assertExitCode(1);
+		} finally {
+			$fs->delete($cached_routes_path);
+			$this->artisan('breadcrumbs:clear');
+		}
 	}
 }
