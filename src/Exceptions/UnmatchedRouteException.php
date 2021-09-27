@@ -2,7 +2,9 @@
 
 namespace Glhd\Gretel\Exceptions;
 
-class UnmatchedRouteException extends \InvalidArgumentException
+use InvalidArgumentException;
+
+class UnmatchedRouteException extends InvalidArgumentException
 {
 	public function __construct(string $url)
 	{

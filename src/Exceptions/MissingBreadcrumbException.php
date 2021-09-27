@@ -2,7 +2,9 @@
 
 namespace Glhd\Gretel\Exceptions;
 
-class MissingBreadcrumbException extends \RuntimeException
+use RuntimeException;
+
+class MissingBreadcrumbException extends RuntimeException
 {
 	public function __construct(string $name)
 	{

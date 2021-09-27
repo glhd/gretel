@@ -13,11 +13,11 @@ class Resolver
 {
 	use ReflectsClosures;
 	
+	public array $parameters;
+	
 	protected ?Closure $callback = null;
 	
 	protected ?string $serialized = null;
-	
-	public array $parameters;
 	
 	public static function make($value, array $parameters = []): self
 	{

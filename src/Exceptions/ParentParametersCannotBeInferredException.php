@@ -2,7 +2,9 @@
 
 namespace Glhd\Gretel\Exceptions;
 
-class ParentParametersCannotBeInferredException extends \InvalidArgumentException
+use InvalidArgumentException;
+
+class ParentParametersCannotBeInferredException extends InvalidArgumentException
 {
 	public function __construct()
 	{
