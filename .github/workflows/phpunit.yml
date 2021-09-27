@@ -16,9 +16,8 @@ jobs:
         laravel: [ ^8.0 ]
         dependency-version: [ lowest, stable ]
         include:
-          - laravel: ^8.0
-            testbench: ^6.0
-            minimum-stability: stable
+          - php: 8.0
+            laravel: ^8.12
 
     name: "${{ matrix.php }} / ${{ matrix.laravel }} (${{ matrix.dependency-version }})"
 
