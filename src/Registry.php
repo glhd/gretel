@@ -67,4 +67,18 @@ class Registry
 			? $route->getName()
 			: (string) $route;
 	}
+	
+	/**
+	 * Added for better backwards-compatibility. Can be removed when Laravel 9 comes out.
+	 */
+	protected function forwardDecoratedCallTo($object, $method, $parameters)
+	{
+		$result = $this->forwardCallTo($object, $method, $parameters);
+		
+		if ($result === $object) {
+			return $this;
+		}
+		
+		return $result;
+	}
 }

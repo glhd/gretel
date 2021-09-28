@@ -5,6 +5,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Fixed
+
+- Added `forwardDecoratedCallTo` for better backwards-compatibility
+
 ## [0.1.1]
 
 ### Fixed
