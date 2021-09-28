@@ -33,6 +33,7 @@ class GretelServiceProvider extends ServiceProvider
 		$this->bootViews();
 		$this->bootBladeComponents();
 		$this->bootCommands();
+		$this->bootCachedBreadcrumbs();
 	}
 	
 	public function register()
@@ -107,6 +108,15 @@ class GretelServiceProvider extends ServiceProvider
 				CacheBreadcrumbs::class,
 				ClearBreadcrumbs::class,
 			]);
+		}
+		
+		return $this;
+	}
+	
+	protected function bootCachedBreadcrumbs(): self
+	{
+		if ($this->app->routesAreCached()) {
+			$this->app->make(Cache::class)->load();
 		}
 		
 		return $this;
