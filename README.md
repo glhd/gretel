@@ -154,29 +154,31 @@ accepts a few optional attributes:
 Gretel supports most common CSS frameworks. We've taken the CSS framework's documented markup and
 added additional `aria-` tags where appropriate for better accessibility. Currently supported frameworks:
 
+##### [Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
 ![Tailwind theme](https://user-images.githubusercontent.com/21592/135018688-4a183ec0-bfc9-4168-80c8-6b7cd037de4d.png)
-[Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
 
+##### [Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
 ![Materialize theme](https://user-images.githubusercontent.com/21592/135018804-88de948a-f69d-4960-ae0a-5d51cfed02dc.png)
-[Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
 
+##### [Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
 ![Bootstrap 5 theme](https://user-images.githubusercontent.com/21592/135088728-cd1ccec9-12c1-4153-a9a2-757a3d6d426e.png)
-[Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
 
+##### [Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
 ![Bulma theme](https://user-images.githubusercontent.com/21592/135089118-7be25e4a-1e68-4c89-ac5b-8307528e3fa0.png)
-[Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
 
+##### [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
 ![Semantic UI theme](https://user-images.githubusercontent.com/21592/135089752-9dd36b92-e4bf-458e-944e-a2a0c8da82f3.png)
-[Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
 
+##### [Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
 ![Primer theme](https://user-images.githubusercontent.com/21592/135090274-cfea4c55-3d30-4343-ba17-5784a1e6bfc3.png)
-[Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
 
+##### [Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
 ![Foundation 6 theme](https://user-images.githubusercontent.com/21592/135090758-ce9d1b73-2cf7-42df-9717-d4ca306c5019.png)
-[Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
 
+##### [UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
 ![UIKit theme](https://user-images.githubusercontent.com/21592/135090949-cb448dac-42ff-4cac-9446-3d0939d2ec2e.png)
-[UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
+
+##### Older Frameworks
 
 Older versions of some frameworks are also available:
 
