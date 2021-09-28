@@ -2,82 +2,71 @@
 
 namespace Glhd\Gretel\Resolvers;
 
+use Arr;
 use Closure;
 use Glhd\Gretel\Exceptions\UnmatchedRouteException;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class ParentResolver extends Resolver
 {
-	public static function makeWithRelation($value, array $parameters = [], Closure $relation = null): Resolver
+	public static function make($value, string $name, ?Closure $relation = null): Resolver
 	{
-		if ($relation) {
-			if ($value instanceof RouteBreadcrumb) {
-				$parent = clone $value;
-			} else {
-				$parent = $value;
-			}
-			
-			$relation = static::optimizeBinding($relation);
-			
-			if ($parent instanceof Closure) {
-				$parent = static::optimizeBinding($parent);
-			}
-			
-			$value = static function($parameters) use ($parent, $relation) {
-				$parameters = array_values($parameters);
-				
-				if ($parent instanceof Closure) {
-					$parent = clone $parent(...$parameters);
-				}
-				
-				return $parent->setParameters(Arr::wrap($relation(...$parameters)));
-			};
-		} elseif ($value instanceof Closure) {
-			// If we're been passed a closure, we need to pass the parameters
-			// in as individual arguments.
-			$original = $value;
-			$value = static function($parameters) use ($original) {
-				return call_user_func_array($original, array_values($parameters));
-			};
-		}
+		$value = static::wrapClosure($value);
+		$relation = static::wrapNullableClosure($relation);
 		
-		return parent::make($value, $parameters);
+		$callback = static function() use ($value, $name, $relation) {
+			return [$value, $name, $relation];
+		};
+		
+		return new static($callback);
 	}
 	
 	public function resolve(array $parameters, Registry $registry)
 	{
-		$result = parent::resolve($parameters, $registry);
+		[$callback, $name, $relation] = parent::resolve($parameters, $registry);
+		$result = $callback($parameters);
 		
-		if (is_string($result)) {
-			// If we get back a URL, we'll try to resolve the parent via the Router
-			if (filter_var($result, FILTER_VALIDATE_URL)) {
-				return $this->findParentByUrl($result, $registry);
-			}
-			
-			// If we get back a route name, we'll load it from the registry and pass
-			// on any custom parameters that were provided
-			if ($registry->has($result)) {
-				$parent = clone $registry->getOrFail($result);
-				return $parent->setParameters($parameters);
-			}
+		if (null === $result) {
+			return null;
+		}
+		
+		if ($relation) {
+			$parameters = Arr::wrap($relation($parameters));
+		}
+		
+		// Handle parent shorthand
+		if (is_string($result) && 0 === strpos($result, '.')) {
+			$result = Str::beforeLast($name, '.').$result;
+		}
+		
+		// If we get back a route name, we'll load it from the registry and pass
+		// on any custom parameters that were provided
+		if (is_string($result) && $registry->has($result)) {
+			$result = $registry->getOrFail($result);
+		}
+		
+		// If we get back a URL, we'll try to resolve the parent via the Router
+		// This may not last in the API — use at your own risk
+		if (is_string($result) && filter_var($result, FILTER_VALIDATE_URL)) {
+			return $this->findParentByUrl($result, $registry);
 		}
 		
 		if (!($result instanceof RouteBreadcrumb)) {
 			throw new RuntimeException('Unable to resolve parent breadcrumb.');
 		}
 		
+		if (!empty($parameters)) {
+			$result = clone $result;
+			$result->setParameters($parameters);
+		}
+		
 		return $result;
-	}
-	
-	protected function transformParameters(array $parameters, Registry $registry): array
-	{
-		return [$parameters];
 	}
 	
 	protected function findParentByUrl(string $url, Registry $registry): RouteBreadcrumb

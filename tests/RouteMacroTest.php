@@ -23,6 +23,8 @@ class RouteMacroTest extends TestCase
 		$this->note = Note::factory()->create(['user_id' => $this->user->id]);
 		
 		$this->artisan('breadcrumbs:clear');
+		
+		$this->withoutExceptionHandling(); // FIXME
 	}
 	
 	/** @dataProvider cachingProvider */
@@ -195,6 +197,24 @@ class RouteMacroTest extends TestCase
 			[$admin_user->name, route('admins.show', $admin_user)],
 			[$admin_note->note, route('notes.show', $admin_note)]
 		);
+	}
+	
+	/** @dataProvider cachingProvider */
+	public function test_breadcrumbs_can_be_registered_out_of_order(bool $cache): void
+	{
+		Route::get('/users/create', $this->action())
+			->name('users.create')
+			->breadcrumb('Add a User', 'users.index');
+		
+		Route::get('/users', $this->action())
+			->name('users.index')
+			->breadcrumb('Users');
+		
+		$this->setUpCache($cache);
+		
+		$this->get('/users/create');
+		
+		$this->assertActiveBreadcrumbs(['Users', '/users'], ['Add a User', '/users/create']);
 	}
 	
 	public function cachingProvider(): array

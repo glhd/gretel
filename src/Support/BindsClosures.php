@@ -6,9 +6,9 @@ use Closure;
 
 trait BindsClosures
 {
-	protected static function optimizeBinding(Closure $closure): Closure
+	protected static function optimizeBinding(?Closure $closure): ?Closure
 	{
-		return config('gretel.static_closures')
+		return null !== $closure && config('gretel.static_closures')
 			? $closure->bindTo(null)
 			: $closure;
 	}

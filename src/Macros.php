@@ -10,7 +10,6 @@ use Glhd\Gretel\Resolvers\UrlResolver;
 use Glhd\Gretel\Routing\RequestBreadcrumbs;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Str;
 
 class Macros
 {
@@ -34,18 +33,13 @@ class Macros
 		$parent = null,
 		Closure $relation = null
 	): Route {
-		if (!$route->getName()) {
+		if (!$name = $route->getName()) {
 			throw new UnnamedRouteException();
 		}
 		
-		$name = $route->getName();
-		$parameters = $route->parameterNames();
-		
-		$title = TitleResolver::make($title, $parameters);
-		$url = UrlResolver::makeForRoute($name, $parameters);
-		
-		$parent = static::resolveParent($registry, $name, $parent);
-		$parent = ParentResolver::makeWithRelation($parent, $parameters, $relation);
+		$title = TitleResolver::make($title);
+		$parent = ParentResolver::make($parent, $name, $relation);
+		$url = UrlResolver::make($name, $route->parameterNames());
 		
 		$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
 		
@@ -55,25 +49,5 @@ class Macros
 	public static function breadcrumbs(Registry $registry, Route $route): RequestBreadcrumbs
 	{
 		return new RequestBreadcrumbs($registry, $route);
-	}
-	
-	protected static function resolveParent(Registry $registry, string $name, $parent)
-	{
-		if ($parent instanceof Closure) {
-			return static function(...$args) use ($name, $parent) {
-				$result = $parent(...$args);
-				return Macros::resolveParent(app(Registry::class), $name, $result);
-			};
-		}
-		
-		if (!is_string($parent)) {
-			return $parent;
-		}
-		
-		if (0 === strpos($parent, '.')) {
-			$parent = Str::beforeLast($name, '.').$parent;
-		}
-		
-		return $registry->getOrFail($parent);
 	}
 }

@@ -19,26 +19,38 @@ class Resolver
 	
 	protected ?string $serialized = null;
 	
-	public static function make($value, array $parameters = []): self
+	protected static function wrap($value): self
 	{
-		// If the value is already a resolver, no need to do anything
-		if ($value instanceof self) {
-			return $value;
-		}
-		
-		// If value is a closure, we'll use late static binding
+		return $value instanceof self
+			? $value
+			: new static(static::wrapClosure($value));
+	}
+	
+	protected static function wrapClosure($value): Closure
+	{
 		if ($value instanceof Closure) {
-			return new static($value, $parameters);
+			$value = static::optimizeBinding($value);
+			return static function($parameters) use ($value) {
+				return $value(...array_values($parameters));
+			};
 		}
 		
-		// Otherwise, we'll instantiate a plain/base resolver instance
-		return new self(fn() => $value, $parameters);
+		return static function() use ($value) {
+			return $value;
+		};
+	}
+	
+	protected static function wrapNullableClosure($value): ?Closure
+	{
+		return null === $value
+			? $value
+			: static::wrapClosure($value);
 	}
 	
 	/**
 	 * @var \Closure|string $callback
 	 */
-	public function __construct($callback, array $parameters)
+	public function __construct($callback)
 	{
 		if ($callback instanceof Closure) {
 			$this->callback = static::optimizeBinding($callback);
@@ -47,16 +59,11 @@ class Resolver
 		} else {
 			throw new InvalidArgumentException('Resolver callbacks must be a Closure or a serialized closure.');
 		}
-		
-		$this->parameters = $parameters;
 	}
 	
-	/**
-	 * @return \Glhd\Gretel\Routing\RouteBreadcrumb|string
-	 */
 	public function resolve(array $parameters, Registry $registry)
 	{
-		return call_user_func_array($this->getClosure(), $this->transformParameters($parameters, $registry));
+		return call_user_func($this->getClosure(), $parameters, $registry);
 	}
 	
 	public function getClosure(): Closure
@@ -72,7 +79,7 @@ class Resolver
 		return $this->callback;
 	}
 	
-	public function exportForSerialization(): array
+	public function getSerializedClosure(): string
 	{
 		if (null === $this->serialized) {
 			$callback = $this->callback;
@@ -81,12 +88,7 @@ class Resolver
 			$this->serialized = serialize(new SerializableClosure($callback));
 		}
 		
-		return [$this->parameters, $this->serialized];
-	}
-	
-	protected function transformParameters(array $parameters, Registry $registry): array
-	{
-		return array_values($parameters);
+		return $this->serialized;
 	}
 	
 	protected function isSerializedClosure($value): bool

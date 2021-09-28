@@ -97,16 +97,9 @@ class Cache
 	
 	protected function exportResolver(Resolver $resolver): string
 	{
-		[$parameters, $callback] = $resolver->exportForSerialization();
-		
-		$parameters = empty($parameters)
-			? '[]'
-			: var_export($parameters, true);
-		
-		$callback = var_export($callback, true);
-		
 		$fqcn = get_class($resolver);
+		$callback = var_export($resolver->getSerializedClosure(), true);
 		
-		return "new \\{$fqcn}({$callback}, {$parameters})";
+		return "new \\{$fqcn}({$callback})";
 	}
 }
