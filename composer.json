@@ -49,7 +49,9 @@
   },
   "extra": {
     "laravel": {
-      "providers": [],
+      "providers": [
+        "Glhd\\Gretel\\Support\\GretelServiceProvider"
+      ],
       "aliases": {}
     }
   }
