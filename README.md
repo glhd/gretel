@@ -211,26 +211,26 @@ You can render a custom view either by publishing the `gretel.php` config file v
 
 If you choose to render your own view, please be sure to follow the current
 [WAI-ARIA accessibility best practices](https://www.w3.org/TR/wai-aria-practices-1.1/examples/breadcrumb/index.html).
-Generally, this comes down to:
+Gretel provides some helpers to make this easier:
 
-```html
-<!-- Wrap your breadcrumbs in a <nav> element with an aria-label attribute -->
-<nav aria-label="Breadcrumb">
-  <!-- Use an <ol> (ordered list) for the breadcrumb items -->
-  <ol>
-    <li>
-      <a href="/">
-        Home
-      </a>
-    </li>
-    <li>
-      <!-- apply aria-current="page" to the current page -->
-      <a href="/users" aria-current="page">
-        Users
-      </a>
-    </li>
-  </ol>
-</nav>
+```blade
+@unless ($breadcrumbs->isEmpty())
+  <!-- Wrap your breadcrumbs in a <nav> element with an aria-label attribute -->
+  <nav aria-label="Breadcrumb">
+    <!-- Use an <ol> (ordered list) for the breadcrumb items -->
+    <ol>
+      @foreach ($breadcrumbs as $breadcrumb)
+        <!-- You can use $activeClass() or $inactiveClass() to conditionally apply classes -->
+        <li class="{{ $activeClass('active-breadcrumb') }}">
+          <!-- Use $ariaCurrent() to apply aria-current="page" to the active breadcrumb -->
+            <a href="{{ $breadcrumb->url }}" {{ $ariaCurrent() }}>
+              {{ $breadcrumb->title }}
+            </a>
+        </li>
+      @endforeach
+    </ol>
+  </nav>
+@endunless
 ```
 
 ### Caching Breadcrumbs
