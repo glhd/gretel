@@ -3,9 +3,9 @@
 namespace Glhd\Gretel\Resolvers;
 
 use Closure;
-use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Exceptions\UnmatchedRouteException;
 use Glhd\Gretel\Registry;
+use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use RuntimeException;
@@ -17,7 +17,7 @@ class ParentResolver extends Resolver
 	public static function makeWithRelation($value, array $parameters = [], Closure $relation = null): Resolver
 	{
 		if ($relation) {
-			if ($value instanceof Breadcrumb) {
+			if ($value instanceof RouteBreadcrumb) {
 				$parent = clone $value;
 			} else {
 				$parent = $value;
@@ -68,7 +68,7 @@ class ParentResolver extends Resolver
 			}
 		}
 		
-		if (!($result instanceof Breadcrumb)) {
+		if (!($result instanceof RouteBreadcrumb)) {
 			throw new RuntimeException('Unable to resolve parent breadcrumb.');
 		}
 		
@@ -80,7 +80,7 @@ class ParentResolver extends Resolver
 		return [$parameters];
 	}
 	
-	protected function findParentByUrl(string $url, Registry $registry): Breadcrumb
+	protected function findParentByUrl(string $url, Registry $registry): RouteBreadcrumb
 	{
 		$router = app('router');
 		$request = Request::createFromBase(SymfonyRequest::create($url));

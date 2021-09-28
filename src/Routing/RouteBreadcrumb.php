@@ -2,15 +2,19 @@
 
 namespace Glhd\Gretel\Routing;
 
-use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Resolvers\Resolver;
-use Illuminate\Routing\Route;
 
-class RouteBreadcrumb extends Breadcrumb
+class RouteBreadcrumb
 {
 	public string $name;
 	
-	public ?Route $route = null;
+	public Resolver $title;
+	
+	public ?Resolver $parent = null;
+	
+	public Resolver $url;
+	
+	public ?array $parameters = null;
 	
 	public function __construct(
 		string $name,
@@ -22,6 +26,13 @@ class RouteBreadcrumb extends Breadcrumb
 		$this->title = $title;
 		$this->parent = $parent;
 		$this->url = $url;
+	}
+	
+	public function setParameters(array $parameters): self
+	{
+		$this->parameters = $parameters;
+		
+		return $this;
 	}
 	
 	public function __sleep()

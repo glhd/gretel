@@ -6,7 +6,7 @@ use Glhd\Gretel\Commands\CacheBreadcrumbs;
 use Glhd\Gretel\Commands\ClearBreadcrumbs;
 use Glhd\Gretel\Macros;
 use Glhd\Gretel\Registry;
-use Glhd\Gretel\Routing\Breadcrumbs as RouteBreadcrumbs;
+use Glhd\Gretel\Routing\RequestBreadcrumbs as RouteBreadcrumbs;
 use Glhd\Gretel\View\Components\Breadcrumbs as BreadcrumbComponent;
 use Illuminate\Container\Container;
 use Illuminate\Filesystem\Filesystem;

@@ -140,6 +140,7 @@ accepts a few optional attributes:
 |--------------------|-------------------------------------------------------------------------------------|
 | `throw-if-missing` | Renders breadcrumbs, but throws an exception if none are set for the current route. |
 | `framework`        | Render to match a UI framework (`"tailwind"` by default)                            |
+| `view`             | Render a custom view (supersedes the `framework` attribute)                         |
 | `jsonld`           | Render as a JSON-LD `<script>` tag                                                  |
 
 #### Supported Frameworks

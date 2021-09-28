@@ -3,7 +3,7 @@
 namespace Glhd\Gretel\View\Components;
 
 use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
-use Glhd\Gretel\Routing\Breadcrumbs as RouteBreadcrumbs;
+use Glhd\Gretel\Routing\RequestBreadcrumbs as RouteBreadcrumbs;
 use Illuminate\Config\Repository;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;

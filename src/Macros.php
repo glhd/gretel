@@ -7,7 +7,7 @@ use Glhd\Gretel\Exceptions\UnnamedRouteException;
 use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
 use Glhd\Gretel\Resolvers\UrlResolver;
-use Glhd\Gretel\Routing\Breadcrumbs;
+use Glhd\Gretel\Routing\RequestBreadcrumbs;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
@@ -52,9 +52,9 @@ class Macros
 		return $route;
 	}
 	
-	public static function breadcrumbs(Registry $registry, Route $route): Breadcrumbs
+	public static function breadcrumbs(Registry $registry, Route $route): RequestBreadcrumbs
 	{
-		return new Breadcrumbs($registry, $route);
+		return new RequestBreadcrumbs($registry, $route);
 	}
 	
 	protected static function resolveParent(Registry $registry, string $name, $parent)

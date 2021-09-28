@@ -52,7 +52,7 @@ class Resolver
 	}
 	
 	/**
-	 * @return \Glhd\Gretel\Breadcrumb|string
+	 * @return \Glhd\Gretel\Routing\RouteBreadcrumb|string
 	 */
 	public function resolve(array $parameters, Registry $registry)
 	{

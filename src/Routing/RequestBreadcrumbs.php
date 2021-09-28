@@ -4,7 +4,6 @@
 
 namespace Glhd\Gretel\Routing;
 
-use Glhd\Gretel\Breadcrumb;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\Resolver;
 use Illuminate\Contracts\Support\Arrayable;
@@ -16,7 +15,7 @@ use Illuminate\Support\Traits\ForwardsCalls;
 /**
  * @mixin Collection
  */
-class Breadcrumbs implements Arrayable, Jsonable
+class RequestBreadcrumbs implements Arrayable, Jsonable
 {
 	use ForwardsCalls;
 	
@@ -42,7 +41,7 @@ class Breadcrumbs implements Arrayable, Jsonable
 	
 	public function toArray()
 	{
-		return $this->breadcrumbs->map(fn(Breadcrumb $breadcrumb) => (object) [
+		return $this->breadcrumbs->map(fn(RouteBreadcrumb $breadcrumb) => (object) [
 			'title' => $this->resolve($breadcrumb->title, $breadcrumb),
 			'url' => $this->resolve($breadcrumb->url, $breadcrumb),
 		]);
@@ -71,16 +70,16 @@ class Breadcrumbs implements Arrayable, Jsonable
 		$this->breadcrumbs->push($breadcrumb);
 	}
 	
-	protected function getBreadcrumb($breadcrumb): ?Breadcrumb
+	protected function getBreadcrumb($breadcrumb): ?RouteBreadcrumb
 	{
-		if ($breadcrumb instanceof Breadcrumb) {
+		if ($breadcrumb instanceof RouteBreadcrumb) {
 			return $breadcrumb;
 		}
 		
 		return $this->registry->get($breadcrumb);
 	}
 	
-	protected function resolve($value, Breadcrumb $breadcrumb)
+	protected function resolve($value, RouteBreadcrumb $breadcrumb)
 	{
 		if ($value instanceof Resolver) {
 			$parameters = $breadcrumb->parameters ?? $this->route->parameters();
