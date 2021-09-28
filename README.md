@@ -1,4 +1,4 @@
-<img alt="Gretel from the story 'Hansel and Gretel' holding bread behind her back" src="gretel.png" align="right" />
+<img alt="Gretel from the story 'Hansel and Gretel' holding bread behind her back" src="gretel.png" height="380" align="right" />
 
 <div>
 	<a href="https://github.com/glhd/gretel/actions" target="_blank">
@@ -38,6 +38,12 @@
 > Laravel breadcrumbs right out of a fairy tale.
 
 Gretel is a Laravel package for adding route-based breadcrumbs to your application.
+
+- [Defining Breadcrumbs](#defining-breadcrumbs)
+- [Displaying Breadcrumbs](#displaying-breadcrumbs)
+- [Using Gretel With Your CSS Framework of Choice](#supported-frameworks)
+- [Using a Custom Template](#custom-breadcrumb-view) (while maintaining accessibility)
+- [Caching Breadcrumbs](#caching-breadcrumbs) (required if using `route:cache`)
 
 ## Installation
 
