@@ -148,14 +148,22 @@ accepts a few optional attributes:
 Gretel supports most common CSS frameworks. We've taken the CSS framework's documented markup and
 added additional `aria-` tags where appropriate for better accessibility. Currently supported frameworks:
 
-- [Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
+### [Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
+
+![Tailwind theme screenshot](https://user-images.githubusercontent.com/21592/135018688-4a183ec0-bfc9-4168-80c8-6b7cd037de4d.png)
+
+### [Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
+
+![Materialize theme](https://user-images.githubusercontent.com/21592/135018804-88de948a-f69d-4960-ae0a-5d51cfed02dc.png)
+
+Additional screenshots coming soon for:
+
 - [Bootstrap 3](https://getbootstrap.com/docs/3.3/components/#breadcrumbs) use `"bootstrap3"`
 - [Bootstrap 4](https://getbootstrap.com/docs/4.6/components/breadcrumb/) use `"bootstrap4"`
 - [Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
 - [Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
 - [Foundation 5](https://get.foundation/sites/docs-v5/components/breadcrumbs.html) use `"foundation5"`
 - [Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
-- [Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
 - [Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
 - [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
 - [UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
