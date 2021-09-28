@@ -5,6 +5,15 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.1.0]
+
+### Changed
+
+- Updated the internal `Resolver` API
+- Improved parent resolver so that you can refer to routes that haven't been defined yet
+
+## [1.0.0]
+
 ### Fixed
 
 - Added `forwardDecoratedCallTo` for better backwards-compatibility
@@ -49,7 +58,9 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 - `Fixed` for any bug fixes. 
 - `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.1.0...HEAD
+[1.1.0]: https://github.com/glhd/gretel/compare/1.0.0...1.1.0
+[1.0.0]: https://github.com/glhd/gretel/compare/0.1.1...1.0.0
 [0.1.1]: https://github.com/glhd/gretel/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/glhd/gretel/compare/0.0.2...0.1.0
 [0.0.2]: https://github.com/glhd/gretel/compare/0.0.1...0.0.2
