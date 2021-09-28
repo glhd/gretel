@@ -148,25 +148,35 @@ accepts a few optional attributes:
 Gretel supports most common CSS frameworks. We've taken the CSS framework's documented markup and
 added additional `aria-` tags where appropriate for better accessibility. Currently supported frameworks:
 
-### [Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
-
-![Tailwind theme screenshot](https://user-images.githubusercontent.com/21592/135018688-4a183ec0-bfc9-4168-80c8-6b7cd037de4d.png)
-
-### [Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
+![Tailwind theme](https://user-images.githubusercontent.com/21592/135018688-4a183ec0-bfc9-4168-80c8-6b7cd037de4d.png)
+[Tailwind](https://tailwindcss.com/) use `"tailwind"` (default)
 
 ![Materialize theme](https://user-images.githubusercontent.com/21592/135018804-88de948a-f69d-4960-ae0a-5d51cfed02dc.png)
+[Materialize](https://materializecss.com/breadcrumbs.html) use `"materialize"`
 
-Additional screenshots coming soon for:
+![Bootstrap 5 theme](https://user-images.githubusercontent.com/21592/135088728-cd1ccec9-12c1-4153-a9a2-757a3d6d426e.png)
+[Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
+
+![Bulma theme](https://user-images.githubusercontent.com/21592/135089118-7be25e4a-1e68-4c89-ac5b-8307528e3fa0.png)
+[Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
+
+![Semantic UI theme](https://user-images.githubusercontent.com/21592/135089752-9dd36b92-e4bf-458e-944e-a2a0c8da82f3.png)
+[Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
+
+![Primer theme](https://user-images.githubusercontent.com/21592/135090274-cfea4c55-3d30-4343-ba17-5784a1e6bfc3.png)
+[Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
+
+![Foundation 6 theme](https://user-images.githubusercontent.com/21592/135090758-ce9d1b73-2cf7-42df-9717-d4ca306c5019.png)
+[Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
+
+![UIKit theme](https://user-images.githubusercontent.com/21592/135090949-cb448dac-42ff-4cac-9446-3d0939d2ec2e.png)
+[UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
+
+Older versions of some frameworks are also available:
 
 - [Bootstrap 3](https://getbootstrap.com/docs/3.3/components/#breadcrumbs) use `"bootstrap3"`
 - [Bootstrap 4](https://getbootstrap.com/docs/4.6/components/breadcrumb/) use `"bootstrap4"`
-- [Bootstrap 5](https://getbootstrap.com/docs/5.0/components/breadcrumb/) use `"bootstrap5"`
-- [Bulma](https://bulma.io/documentation/components/breadcrumb/) use `"bulma"`
 - [Foundation 5](https://get.foundation/sites/docs-v5/components/breadcrumbs.html) use `"foundation5"`
-- [Foundation 6](https://get.foundation/sites/docs/breadcrumbs.html) use `"foundation6"`
-- [Primer](https://primer.style/css/components/breadcrumb) use `"primer"`
-- [Semantic UI](https://semantic-ui.com/collections/breadcrumb.html) use `"semantic-ui"`
-- [UIKit](https://getuikit.com/docs/breadcrumb) use `"uikit"`
 
 You'll typically want to include the `<x-breadcrumbs />` tag somewhere in your application layout 
 (maybe twice if you're using JSON-LD):
