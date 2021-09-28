@@ -13,7 +13,7 @@ jobs:
     strategy:
       matrix:
         php: [ 8.0, 7.4 ]
-        laravel: [ ^8.20 ]
+        laravel: [ ^8.30 ]
         dependency-version: [ lowest, stable ]
 
     name: "${{ matrix.php }} / ${{ matrix.laravel }} (${{ matrix.dependency-version }})"
@@ -27,6 +27,7 @@ jobs:
         with:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, bcmath, intl, iconv
+          tools: composer:v2
 
       - name: Register composer cache directory
         id: composer-cache-files-dir
