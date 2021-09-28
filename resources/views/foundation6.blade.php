@@ -1,18 +1,18 @@
+<?php /** @var \Glhd\Gretel\View\BreadcrumbCollection|\Glhd\Gretel\View\Breadcrumb[] $breadcrumbs */ ?>
+
 @unless ($breadcrumbs->isEmpty())
-	<nav aria-label="Breadcrumbs">
+	<nav aria-label="Breadcrumb">
 		<ol class="breadcrumbs">
 			@foreach ($breadcrumbs as $breadcrumb)
-				@if($loop->last)
-					<li aria-current="page">
+				<li {{ $ariaCurrent() }}>
+					@if($breadcrumb->is_current_page)
 						{{ $breadcrumb->title }}
-					</li>
-				@else
-					<li>
+					@else
 						<a href="{{ $breadcrumb->url }}">
 							{{ $breadcrumb->title }}
 						</a>
-					</li>
-				@endif
+					@endif
+				</li>
 			@endforeach
 		</ol>
 	</nav>

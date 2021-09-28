@@ -6,6 +6,8 @@ namespace Glhd\Gretel\Routing;
 
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\Resolver;
+use Glhd\Gretel\View\Breadcrumb;
+use Glhd\Gretel\View\BreadcrumbCollection;
 use Illuminate\Contracts\Support\Arrayable;
 use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Routing\Route;
@@ -23,31 +25,30 @@ class RequestBreadcrumbs implements Arrayable, Jsonable
 	
 	protected Route $route;
 	
-	protected Collection $breadcrumbs;
+	protected BreadcrumbCollection $breadcrumbs;
 	
 	public function __construct(Registry $registry, Route $route)
 	{
 		$this->registry = $registry;
 		$this->route = $route;
-		$this->breadcrumbs = new Collection();
+		$this->breadcrumbs = new BreadcrumbCollection();
+	}
+	
+	public function toCollection(): BreadcrumbCollection
+	{
+		if ($this->breadcrumbs->isEmpty()) {
+			$this->walk($this->route->getName());
+		}
 		
-		$this->walk($route->getName());
+		return $this->breadcrumbs;
 	}
 	
-	public function toCollection(): Collection
+	public function toArray(): array
 	{
-		return new Collection($this->toArray());
+		return $this->toCollection()->toArray();
 	}
 	
-	public function toArray()
-	{
-		return $this->breadcrumbs->map(fn(RouteBreadcrumb $breadcrumb) => (object) [
-			'title' => $this->resolve($breadcrumb->title, $breadcrumb),
-			'url' => $this->resolve($breadcrumb->url, $breadcrumb),
-		]);
-	}
-	
-	public function toJson($options = 0)
+	public function toJson($options = JSON_THROW_ON_ERROR)
 	{
 		return json_encode($this->toArray(), $options);
 	}
@@ -57,20 +58,29 @@ class RequestBreadcrumbs implements Arrayable, Jsonable
 		return $this->forwardDecoratedCallTo($this->breadcrumbs, $name, $arguments);
 	}
 	
-	protected function walk($value): void
+	protected function walk($value, $depth = 0): ?Breadcrumb
 	{
-		if (!$breadcrumb = $this->getBreadcrumb($value)) {
-			return;
+		if (!$breadcrumb = $this->getRouteBreadcrumb($value)) {
+			return null;
 		}
 		
 		if ($parent = $this->resolve($breadcrumb->parent, $breadcrumb)) {
-			$this->walk($parent);
+			$parent = $this->walk($parent, $depth + 1);
 		}
 		
+		$breadcrumb = new Breadcrumb(
+			$this->resolve($breadcrumb->title, $breadcrumb),
+			$this->resolve($breadcrumb->url, $breadcrumb),
+			0 === $depth,
+			$parent
+		);
+		
 		$this->breadcrumbs->push($breadcrumb);
+		
+		return $breadcrumb;
 	}
 	
-	protected function getBreadcrumb($breadcrumb): ?RouteBreadcrumb
+	protected function getRouteBreadcrumb($breadcrumb): ?RouteBreadcrumb
 	{
 		if ($breadcrumb instanceof RouteBreadcrumb) {
 			return $breadcrumb;

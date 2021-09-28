@@ -4,21 +4,20 @@ namespace Glhd\Gretel\View\Components;
 
 use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
 use Glhd\Gretel\Routing\RequestBreadcrumbs as RouteBreadcrumbs;
+use Glhd\Gretel\View\Breadcrumb;
+use Glhd\Gretel\View\BreadcrumbCollection;
 use Illuminate\Config\Repository;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\HtmlString;
 use Illuminate\View\Component;
 
 class Breadcrumbs extends Component
 {
-	protected RouteBreadcrumbs $breadcrumbs;
+	public BreadcrumbCollection $breadcrumbs;
 	
 	protected Repository $config;
 	
 	protected ?string $view = null;
-	
-	protected bool $throw = false;
 	
 	public function __construct(
 		RouteBreadcrumbs $breadcrumbs,
@@ -26,11 +25,15 @@ class Breadcrumbs extends Component
 		string $framework = null,
 		string $view = null,
 		bool $jsonLd = false,
+		bool $rdfa = false,
 		bool $throwIfMissing = false
 	) {
-		$this->breadcrumbs = $breadcrumbs;
+		$this->breadcrumbs = $breadcrumbs->toCollection();
 		$this->config = $config;
-		$this->throw = $throwIfMissing;
+		
+		if ($throwIfMissing && $this->breadcrumbs->isEmpty()) {
+			throw new MissingBreadcrumbException(URL::current()); // FIXME
+		}
 		
 		if ($view) {
 			$this->view = $view;
@@ -44,30 +47,52 @@ class Breadcrumbs extends Component
 	public function render()
 	{
 		$view = $this->view ?? $this->config->get('gretel.view', 'gretel::tailwind');
-		$breadcrumbs = $this->breadcrumbs->toCollection();
 		
-		if ($this->throw && $breadcrumbs->isEmpty()) {
-			throw new MissingBreadcrumbException(URL::current()); // FIXME
-		}
-		
-		return view($view, [
-			'breadcrumbs' => $breadcrumbs,
-			'jsonld' => fn(int $flags = 0) => $this->convertBreadcrumbsToJsonLinkingData($breadcrumbs, $flags),
-		]);
+		return view($view);
 	}
 	
-	protected function convertBreadcrumbsToJsonLinkingData(Collection $breadcrumbs, int $flags = 0): HtmlString
+	public function activeClass(string ...$class): ?string
 	{
-		$items = $breadcrumbs
-			->values()
-			->map(function($breadcrumb, $index) {
+		if (!$this->breadcrumbs->active->is_current_page) {
+			return null;
+		}
+		
+		return collect($class)->filter()->implode(' ');
+	}
+	
+	public function inactiveClass(string ...$class): ?string
+	{
+		if ($this->breadcrumbs->active->is_current_page) {
+			return null;
+		}
+		
+		return collect($class)->filter()->implode(' ');
+	}
+	
+	public function ariaCurrent(string $value = 'page'): ?HtmlString
+	{
+		if (!$this->breadcrumbs->active->is_current_page) {
+			return null;
+		}
+		
+		return new HtmlString(' aria-current="'.e($value).'" ');
+	}
+	
+	public function href(): HtmlString
+	{
+		return new HtmlString(' href="'.e($this->breadcrumbs->active->url).'" ');
+	}
+	
+	public function jsonld(int $flags = 0): HtmlString
+	{
+		$items = $this->breadcrumbs->values()
+			->map(function(Breadcrumb $breadcrumb, $index) {
 				return [
 					'@type' => 'ListItem',
 					'position' => $index + 1,
 					'item' => [
 						'@id' => $breadcrumb->url,
 						'name' => $breadcrumb->title,
-						// 'image' => null,
 					],
 				];
 			})

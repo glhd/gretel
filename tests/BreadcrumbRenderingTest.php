@@ -32,15 +32,15 @@ class BreadcrumbRenderingTest extends TestCase
 			Route::get('/users/{user}/notes/{note}', fn(User $user, Note $note) => $cb())->name('notes.show')->breadcrumb(fn(User $user, Note $note) => $note->note, '.index');
 		});
 		
-		$this->user = User::factory()->create();
-		$this->note = Note::factory()->create(['user_id' => $this->user->id]);
+		$this->user = User::factory()->create(['name' => 'Chris Morrell']);
+		$this->note = Note::factory()->create(['user_id' => $this->user->id, 'note' => 'Demo Note']);
 	}
 	
 	public function test_default_behavior(): void
 	{
-		$this->blade = '<x-breadcrumbs />';
+		$this->blade = '<x-breadcrumbs framework="tailwind" />';
 		
-		$this->get(route('notes.show', [$this->user, $this->note]))
+		$result = $this->get(route('notes.show', [$this->user, $this->note]))
 			->assertSeeInOrder([
 				route('home'),
 				route('users.index'),

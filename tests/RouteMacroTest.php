@@ -226,7 +226,7 @@ class RouteMacroTest extends TestCase
 	{
 		$breadcrumbs = $this->app->make(\Illuminate\Routing\Route::class)
 			->breadcrumbs()
-			->toArray();
+			->toCollection();
 		
 		foreach ($expectations as $index => [$title, $url]) {
 			$breadcrumb = $breadcrumbs[$index];
