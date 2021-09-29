@@ -52,7 +52,9 @@
       "providers": [
         "Glhd\\Gretel\\Support\\GretelServiceProvider"
       ],
-      "aliases": {}
+      "aliases": {
+        "Gretel": "Glhd\\Gretel\\Support\\Facades\\Gretel"
+      }
     }
   }
 }

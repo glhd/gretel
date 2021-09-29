@@ -5,11 +5,11 @@ namespace Glhd\Gretel\Resolvers;
 use Arr;
 use Closure;
 use Glhd\Gretel\Exceptions\UnmatchedRouteException;
+use Glhd\Gretel\Exceptions\UnresolvableParentException;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use RuntimeException;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -58,7 +58,7 @@ class ParentResolver extends Resolver
 		}
 		
 		if (!($result instanceof RouteBreadcrumb)) {
-			throw new RuntimeException('Unable to resolve parent breadcrumb.');
+			throw new UnresolvableParentException($result, $name);
 		}
 		
 		if (!empty($parameters)) {
@@ -69,6 +69,10 @@ class ParentResolver extends Resolver
 		return $result;
 	}
 	
+	/**
+	 * Please note that this behavior is intentionally undocumented and may be
+	 * removed at any time. Use at your own risk.
+	 */
 	protected function findParentByUrl(string $url, Registry $registry): RouteBreadcrumb
 	{
 		$router = app('router');

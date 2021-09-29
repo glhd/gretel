@@ -24,7 +24,7 @@ class RouteMacroTest extends TestCase
 		
 		$this->artisan('breadcrumbs:clear');
 		
-		$this->withoutExceptionHandling(); // FIXME
+		$this->withoutExceptionHandling();
 	}
 	
 	/** @dataProvider cachingProvider */
@@ -215,6 +215,31 @@ class RouteMacroTest extends TestCase
 		$this->get('/users/create');
 		
 		$this->assertActiveBreadcrumbs(['Users', '/users'], ['Add a User', '/users/create']);
+	}
+	
+	/** @dataProvider cachingProvider */
+	public function test_defining_parent_with_route_helper(bool $cache): void
+	{
+		Route::get('/users/{user}', fn(User $user) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('users.show')
+			->breadcrumb(fn(User $user) => $user->name);
+		
+		Route::get('/notes/{note}', fn(Note $note) => 'OK')
+			->middleware(SubstituteBindings::class)
+			->name('notes.show')
+			->breadcrumb(
+				fn(Note $note) => $note->note,
+				fn(Note $note) => route('users.show', $note->author),
+			);
+		
+		$this->setUpCache($cache);
+		
+		$this->get(route('notes.show', $this->note));
+		$this->assertActiveBreadcrumbs(
+			[$this->user->name, route('users.show', $this->user)],
+			[$this->note->note, route('notes.show', $this->note)]
+		);
 	}
 	
 	public function cachingProvider(): array

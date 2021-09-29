@@ -6,8 +6,10 @@ use RuntimeException;
 
 class MissingBreadcrumbException extends RuntimeException
 {
-	public function __construct(string $name)
+	public function __construct(?string $name)
 	{
+		$name ??= '[unnamed route]';
+		
 		parent::__construct("There is no breadcrumb registered for '{$name}'.");
 	}
 }

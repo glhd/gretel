@@ -44,6 +44,7 @@ Gretel is a Laravel package for adding route-based breadcrumbs to your applicati
 - [Using Gretel With Your CSS Framework of Choice](#supported-frameworks)
 - [Using a Custom Template](#custom-breadcrumb-view) (while maintaining accessibility)
 - [Caching Breadcrumbs](#caching-breadcrumbs) (required if using `route:cache`)
+- [Handling Errors](#handling-errors)
 
 ## Installation
 
@@ -144,7 +145,6 @@ accepts a few optional attributes:
 
 | Attribute          |                                                                                     |
 |--------------------|-------------------------------------------------------------------------------------|
-| `throw-if-missing` | Renders breadcrumbs, but throws an exception if none are set for the current route. |
 | `framework`        | Render to match a UI framework (`"tailwind"` by default)                            |
 | `view`             | Render a custom view (supersedes the `framework` attribute)                         |
 | `jsonld`           | Render as a JSON-LD `<script>` tag                                                  |
@@ -255,3 +255,22 @@ php artisan breadcrumbs:clear
 ```
 
 Please note that you must cache your breadcrumbs **before you cache your routes**.
+
+### Handling Errors
+
+Sometimes you'll mis-configure a breadcrumb or forget to define one. You can register handlers 
+on the `Gretel` facade to handle these cases:
+
+```php
+// Log or report a missing breadcrumb
+Gretel::handleMissingBreadcrumbs(fn(MissingBreadcrumbException $exception) => Log::warning($exception->getMessage()));
+
+// Throw an exception locally if there's a missing breadcrumb
+Gretel::throwOnMissingBreadcrumbs(! App::environment('production'));
+
+// Log or report a mis-configured breadcrumb (i.e. a parent route that doesn't exist)
+Gretel::handleMisconfiguredBreadcrumbs(fn() => Log::warning('Missing breadcrumb.'));
+
+// Throw an exception locally if there's a mis-configured breadcrumb
+Gretel::throwOnMisconfiguredBreadcrumbs(! App::environment('production'));
+```

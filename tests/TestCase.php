@@ -31,4 +31,9 @@ abstract class TestCase extends Orchestra
 	{
 		$this->loadMigrationsFrom(__DIR__.'/database/migrations');
 	}
+	
+	protected function renderBlade($contents, array $data = [])
+	{
+		return (new InlineBlade($contents, $data))->render();
+	}
 }

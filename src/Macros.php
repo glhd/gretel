@@ -33,15 +33,17 @@ class Macros
 		$parent = null,
 		Closure $relation = null
 	): Route {
-		if (!$name = $route->getName()) {
-			throw new UnnamedRouteException();
-		}
-		
-		$title = TitleResolver::make($title);
-		$parent = ParentResolver::make($parent, $name, $relation);
-		$url = UrlResolver::make($name, $route->parameterNames());
-		
-		$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
+		$registry->withExceptionHandling(function() use ($registry, $route, $title, $parent, $relation) {
+			if (!$name = $route->getName()) {
+				throw new UnnamedRouteException();
+			}
+			
+			$title = TitleResolver::make($title);
+			$parent = ParentResolver::make($parent, $name, $relation);
+			$url = UrlResolver::make($name, $route->parameterNames());
+			
+			$registry->register(new RouteBreadcrumb($name, $title, $parent, $url));
+		});
 		
 		return $route;
 	}

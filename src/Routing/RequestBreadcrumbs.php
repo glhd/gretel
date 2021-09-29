@@ -4,6 +4,7 @@
 
 namespace Glhd\Gretel\Routing;
 
+use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\Resolver;
 use Glhd\Gretel\View\Breadcrumb;
@@ -43,6 +44,13 @@ class RequestBreadcrumbs implements Arrayable, Jsonable
 		return $this->breadcrumbs;
 	}
 	
+	public function throwIfMissing(): void
+	{
+		if ($this->toCollection()->isEmpty()) {
+			throw new MissingBreadcrumbException($this->route->getName());
+		}
+	}
+	
 	public function toArray(): array
 	{
 		return $this->toCollection()->toArray();
@@ -55,7 +63,7 @@ class RequestBreadcrumbs implements Arrayable, Jsonable
 	
 	public function __call($name, $arguments)
 	{
-		return $this->forwardDecoratedCallTo($this->breadcrumbs, $name, $arguments);
+		return $this->forwardDecoratedCallTo($this->toCollection(), $name, $arguments);
 	}
 	
 	protected function walk($value, $depth = 0): ?Breadcrumb

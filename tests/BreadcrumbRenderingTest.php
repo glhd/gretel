@@ -2,12 +2,10 @@
 
 namespace Glhd\Gretel\Tests;
 
-use Glhd\Gretel\Exceptions\MissingBreadcrumbException;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
-use Illuminate\View\ViewException;
 
 class BreadcrumbRenderingTest extends TestCase
 {
@@ -63,33 +61,5 @@ class BreadcrumbRenderingTest extends TestCase
 		
 		$result = $this->get(route('notes.show', [$this->user, $this->note]))
 			->assertOk();
-	}
-	
-	public function test_throw_when_no_breadcrumbs_match(): void
-	{
-		$this->blade = '<x-breadcrumbs throw-if-missing />';
-		
-		$this->get(route('notes.show', [$this->user, $this->note]))
-			->assertOk();
-	}
-	
-	public function test_throw_when_breadcrumbs_match(): void
-	{
-		Route::get('/foo', fn() => $this->renderBlade('<x-breadcrumbs throw-if-missing />'));
-		
-		try {
-			$this->withoutExceptionHandling()->get('/foo');
-			$this->fail('No exception thrown.');
-		} catch (ViewException $exception) {
-			$previous = $exception->getPrevious();
-			$this->assertInstanceOf(MissingBreadcrumbException::class, $previous);
-		} catch (MissingBreadcrumbException $exception) {
-			$this->assertInstanceOf(MissingBreadcrumbException::class, $exception);
-		}
-	}
-	
-	protected function renderBlade($contents, array $data = [])
-	{
-		return (new InlineBlade($contents, $data))->render();
 	}
 }

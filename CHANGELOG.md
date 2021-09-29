@@ -5,6 +5,16 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## Added
+
+- Added `Gretel` facade
+- Added options for handling missing or mis-configured breadcrumbs (see README)
+- Added additional exceptions for more granular handling
+
+## Fixed
+
+- Calling `Collection` methods on `RequestBreadcrumbs` now automatically populates the collection first
+
 ## [1.1.0]
 
 ### Changed
