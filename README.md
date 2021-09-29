@@ -262,14 +262,20 @@ Sometimes you'll mis-configure a breadcrumb or forget to define one. You can reg
 on the `Gretel` facade to handle these cases:
 
 ```php
-// Log or report a missing breadcrumb
-Gretel::handleMissingBreadcrumbs(fn(MissingBreadcrumbException $exception) => Log::warning($exception->getMessage()));
+// Log or report a missing breadcrumb (will always receive a MissingBreadcrumbException instance)
+Gretel::handleMissingBreadcrumbs(function(MissingBreadcrumbException $exception) {
+  Log::warning($exception->getMessage());
+});
 
 // Throw an exception locally if there's a missing breadcrumb
 Gretel::throwOnMissingBreadcrumbs(! App::environment('production'));
 
-// Log or report a mis-configured breadcrumb (i.e. a parent route that doesn't exist)
-Gretel::handleMisconfiguredBreadcrumbs(fn() => Log::warning('Missing breadcrumb.'));
+// Log or report a mis-configured breadcrumb (i.e. a parent route that doesn't exist).
+// This handler will pick up any other exception that is triggered while trying to configure
+// or render your breadcrumbs, so the type is unknown.
+Gretel::handleMisconfiguredBreadcrumbs(function(Throwable $exception) {
+  Log::warning($exception->getMessage());
+});
 
 // Throw an exception locally if there's a mis-configured breadcrumb
 Gretel::throwOnMisconfiguredBreadcrumbs(! App::environment('production'));
