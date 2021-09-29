@@ -5,6 +5,8 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.2.0]
+
 ## Added
 
 - Added `Gretel` facade
@@ -68,7 +70,8 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 - `Fixed` for any bug fixes. 
 - `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/1.1.0...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.2.0...HEAD
+[1.2.0]: https://github.com/glhd/gretel/compare/1.1.0...1.2.0
 [1.1.0]: https://github.com/glhd/gretel/compare/1.0.0...1.1.0
 [1.0.0]: https://github.com/glhd/gretel/compare/0.1.1...1.0.0
 [0.1.1]: https://github.com/glhd/gretel/compare/0.1.0...0.1.1
