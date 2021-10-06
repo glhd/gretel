@@ -14,11 +14,12 @@ use Illuminate\Contracts\Support\Jsonable;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Traits\ForwardsCalls;
+use JsonSerializable;
 
 /**
  * @mixin Collection
  */
-class RequestBreadcrumbs implements Arrayable, Jsonable
+class RequestBreadcrumbs implements JsonSerializable, Arrayable, Jsonable
 {
 	use ForwardsCalls;
 	
@@ -56,9 +57,16 @@ class RequestBreadcrumbs implements Arrayable, Jsonable
 		return $this->toCollection()->toArray();
 	}
 	
+	public function jsonSerialize(): array
+	{
+		return $this->toCollection()
+			->map(fn(Breadcrumb $breadcrumb) => $breadcrumb->jsonSerialize())
+			->all();
+	}
+	
 	public function toJson($options = JSON_THROW_ON_ERROR)
 	{
-		return json_encode($this->toArray(), $options);
+		return json_encode($this->jsonSerialize(), $options);
 	}
 	
 	public function __call($name, $arguments)

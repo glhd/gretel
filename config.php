@@ -15,6 +15,20 @@ return [
 	
 	/*
 	|--------------------------------------------------------------------------
+	| Third Party Integrations
+	|--------------------------------------------------------------------------
+	|
+	| By default, Gretel will share the current breadcrumbs with Inertia.js
+	| if Inertia is installed. You can disable that here.
+	|
+	*/
+	
+	'packages' => [
+		'inertiajs/inertia-laravel' => true,
+	],
+	
+	/*
+	|--------------------------------------------------------------------------
 	| Use Static Closures
 	|--------------------------------------------------------------------------
 	|

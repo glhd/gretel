@@ -9,12 +9,16 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Routing\RequestBreadcrumbs as RouteBreadcrumbs;
 use Glhd\Gretel\View\Components\Breadcrumbs as BreadcrumbComponent;
 use Illuminate\Container\Container;
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Route;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\View\Compilers\BladeCompiler;
+use Inertia\Inertia;
 
 class GretelServiceProvider extends ServiceProvider
 {
@@ -34,6 +38,7 @@ class GretelServiceProvider extends ServiceProvider
 		$this->bootBladeComponents();
 		$this->bootCommands();
 		$this->bootCachedBreadcrumbs();
+		$this->bootThirdParty();
 	}
 	
 	public function register()
@@ -117,6 +122,24 @@ class GretelServiceProvider extends ServiceProvider
 	{
 		if ($this->app->routesAreCached()) {
 			$this->app->make(Cache::class)->load();
+		}
+		
+		return $this;
+	}
+	
+	protected function bootThirdParty(): self
+	{
+		$config = $this->app->make(Repository::class);
+		
+		$packages = $config->get('gretel.packages', []);
+		
+		if (Arr::get($packages, 'inertiajs/inertia-laravel') && class_exists(Inertia::class)) {
+			Inertia::share('breadcrumbs', static function(Request $request) {
+				if ($route = $request->route()) {
+					return $route->breadcrumbs()->jsonSerialize();
+				}
+				return [];
+			});
 		}
 		
 		return $this;

@@ -45,6 +45,7 @@ Gretel is a Laravel package for adding route-based breadcrumbs to your applicati
 - [Using a Custom Template](#custom-breadcrumb-view) (while maintaining accessibility)
 - [Caching Breadcrumbs](#caching-breadcrumbs) (required if using `route:cache`)
 - [Handling Errors](#handling-errors)
+- [Integration With Third Party Packages](#integration-with-third-party-packages) (Inertia.js)
 
 ## Installation
 
@@ -280,3 +281,35 @@ Gretel::handleMisconfiguredBreadcrumbs(function(Throwable $exception) {
 // Throw an exception locally if there's a mis-configured breadcrumb
 Gretel::throwOnMisconfiguredBreadcrumbs(! App::environment('production'));
 ```
+
+### Integration With Third Party Packages
+
+Gretel automatically [shares your breadcrumbs with Inertia.js](https://inertiajs.com/shared-data)
+if you have that package installed. You don't need to do anything to enable this integration. (If 
+you do not want this behavior for some reason, you can disable it by publishing the Gretel config.)
+
+Your breadcrumbs will be available in your client code as `breadcrumbs` and look something like:
+
+```js
+const breadcrumbs = [
+	{
+		title: 'Home',
+        url: 'https://www.yourapp.com',
+		is_current_page: false,
+    },
+	{
+		title: 'Users',
+		url: 'https://www.yourapp.com/users',
+		is_current_page: false,
+	},
+	{
+		title: 'Add a User',
+		url: 'https://www.yourapp.com/users/create',
+		is_current_page: true,
+	},
+];
+```
+
+You can then render the breadcrumbs in the client however you see fit. Be sure to review
+the [custom breadcrumbs](#custom-breadcrumb-view) section for information about how to
+ensure that your client-side breadcrumbs are fully accessible.
