@@ -216,6 +216,28 @@ You can render a custom view either by publishing the `gretel.php` config file v
 <x-breadcrumbs view="app.breadcrumbs" />
 ```
 
+#### Using Breadcrumbs in Some Other Way
+
+If you need to use the breadcrumbs in some other way—maybe for rending via a client-side
+framework that Gretel doesn’t already integrate with—you can always just get the current
+breadcrumbs as a `Collection` or `array` off the route:
+
+```php
+Route::breadcrumbs()->toCollection();  // Collection of `Breadcrumb` objects
+Route::breadcrumbs()->toArray();       // Array of `Breadcrumb` objects
+Route::breadcrumbs()->jsonSerialize(); // Array of breadcrumb arrays (title, url, is_current_page)
+Route::breadcrumbs()->toJson();        // JSON string of breadcrumbs matching jsonSerialize
+```
+
+For example, our [Inertia.js integration](#integration-with-third-party-packages) could
+easily be implemented as:
+
+```php
+Inertia::share('breadcrumbs', function(Request $request) {
+    return $request->route()->breadcrumbs()->jsonSerialize();
+});
+```
+
 ##### Accessibility
 
 If you choose to render your own view, please be sure to follow the current
@@ -292,21 +314,19 @@ Your breadcrumbs will be available in your client code as `breadcrumbs` and look
 
 ```js
 const breadcrumbs = [
-	{
-		title: 'Home',
-        url: 'https://www.yourapp.com',
-		is_current_page: false,
-    },
-	{
-		title: 'Users',
-		url: 'https://www.yourapp.com/users',
-		is_current_page: false,
-	},
-	{
-		title: 'Add a User',
-		url: 'https://www.yourapp.com/users/create',
-		is_current_page: true,
-	},
+  {
+    title: 'Home',
+    url: 'https://www.yourapp.com',
+    is_current_page: false,
+  }, {
+    title: 'Users',
+    url: 'https://www.yourapp.com/users',
+    is_current_page: false,
+  }, {
+    title: 'Add a User',
+    url: 'https://www.yourapp.com/users/create',
+    is_current_page: true,
+  }
 ];
 ```
 
