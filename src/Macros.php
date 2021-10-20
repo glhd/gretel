@@ -8,8 +8,11 @@ use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
 use Glhd\Gretel\Resolvers\UrlResolver;
 use Glhd\Gretel\Routing\RequestBreadcrumbs;
+use Glhd\Gretel\Routing\ResourceBreadcrumbs;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
+use Illuminate\Routing\PendingResourceRegistration;
 use Illuminate\Routing\Route;
+use InvalidArgumentException;
 
 class Macros
 {
@@ -23,6 +26,12 @@ class Macros
 		
 		Route::macro('breadcrumbs', function() use ($registry) {
 			return Macros::breadcrumbs($registry, $this);
+		});
+		
+		PendingResourceRegistration::macro('breadcrumbs', function($breadcrumbs) use ($registry) {
+			Macros::resourceBreadcrumbs($registry, $this->name, $this->options, $breadcrumbs);
+			
+			return $this;
 		});
 	}
 	
@@ -51,5 +60,20 @@ class Macros
 	public static function breadcrumbs(Registry $registry, Route $route): RequestBreadcrumbs
 	{
 		return new RequestBreadcrumbs($registry, $route);
+	}
+	
+	public static function resourceBreadcrumbs(Registry $registry, string $name, array $options, $setup): void
+	{
+		$breadcrumbs = new ResourceBreadcrumbs($name, $options);
+		
+		if (is_array($setup)) {
+			$breadcrumbs->configure($setup);
+		} elseif ($setup instanceof Closure) {
+			$setup($breadcrumbs);
+		} else {
+			throw new InvalidArgumentException('Route::resource()->breadcrumbs() expects an array or closure.');
+		}
+		
+		$breadcrumbs->register($registry);
 	}
 }

@@ -37,7 +37,7 @@ class Registry
 	public function withExceptionHandling(Closure $callback)
 	{
 		try {
-			return $callback();
+			return $callback($this);
 		} catch (MissingBreadcrumbException $exception) {
 			$this->callHandler(static::HANDLER_MISSING, $exception);
 		} catch (Throwable $exception) {

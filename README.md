@@ -139,6 +139,35 @@ Route::get('/users/{user}', [UserController::class, 'show'])
 
 ![Shallow Nested Example](https://user-images.githubusercontent.com/21592/134791638-fbb87040-e27f-4749-9175-0f5dce995924.png)
 
+#### Resource Routes
+
+You can also define breadcrumbs for resource controllers. The `index()`, `create()`,
+`show()`, and `edit()` methods behave exactly like the regular breadcrumb helper except that
+they automatically set up the parent for you if you don’t provide one.
+
+```php
+Route::resource('users', UserController::class)
+  ->breadcrumbs(function(ResourceBreadcrumbs $breadcrumbs) {
+    $breadcrumbs
+      ->index('Users')
+      ->create('New User')
+      ->show(fn(User $user) => $user->name)
+      ->edit('Edit');
+  });
+```
+
+If you prefer, you can also use an array syntax for simple resource routes:
+
+```php
+Route::resource('users', UserController::class)
+  ->breadcrumbs([
+    'index' => 'Users',
+    'create' => 'New User',
+    'show' => fn(User $user) => $user->name,
+    'edit' => 'Edit',
+  ]);
+```
+
 ### Displaying Breadcrumbs
 
 You can display the breadcrumbs for the current route with the `<x-breadcrumbs />` Blade component. The Blade component

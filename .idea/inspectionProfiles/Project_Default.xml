@@ -1077,7 +1077,7 @@
     <inspection_tool class="TypeScriptValidateGenericTypes" enabled="true" level="ERROR" enabled_by_default="true" />
     <inspection_tool class="TypeScriptValidateJSTypes" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="TypeScriptValidateTypes" enabled="true" level="ERROR" enabled_by_default="true" />
-    <inspection_tool class="TypeUnsafeArraySearchInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
+    <inspection_tool class="TypeUnsafeArraySearchInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
     <inspection_tool class="TypeUnsafeComparisonInspection" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="TypesCastingCanBeUsedInspection" enabled="true" level="WEAK WARNING" enabled_by_default="true" />
     <inspection_tool class="UnNecessaryDoubleQuotesInspection" enabled="false" level="WEAK WARNING" enabled_by_default="false" />
