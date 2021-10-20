@@ -2,8 +2,6 @@
 
 namespace Glhd\Gretel\Tests;
 
-use Glhd\Gretel\Registry;
-use Glhd\Gretel\Support\Cache;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -11,6 +9,8 @@ use Illuminate\Support\Facades\Route;
 
 class RouteMacroTest extends TestCase
 {
+	use TestsCachedBreadcrumbs;
+	
 	protected User $user;
 	
 	protected Note $note;
@@ -240,46 +240,6 @@ class RouteMacroTest extends TestCase
 			[$this->user->name, route('users.show', $this->user)],
 			[$this->note->note, route('notes.show', $this->note)]
 		);
-	}
-	
-	public function cachingProvider(): array
-	{
-		return [
-			'Uncached' => [false],
-			'Cached' => [true],
-		];
-	}
-	
-	protected function setUpCache(bool $cache = true): self
-	{
-		if ($cache) {
-			$this->artisan('breadcrumbs:cache');
-			$this->app->make(Registry::class)->clear();
-			$this->app->make(Cache::class)->load();
-		} else {
-			$this->artisan('breadcrumbs:clear');
-		}
-		
-		return $this;
-	}
-	
-	/**
-	 * @param array{string, string} ...$expectations
-	 * @return $this
-	 */
-	protected function assertActiveBreadcrumbs(array ...$expectations): self
-	{
-		$breadcrumbs = $this->app->make(\Illuminate\Routing\Route::class)
-			->breadcrumbs()
-			->toCollection();
-		
-		foreach ($expectations as $index => [$title, $url]) {
-			$breadcrumb = $breadcrumbs[$index];
-			$this->assertEquals($title, $breadcrumb->title);
-			$this->assertEquals(url($url), $breadcrumb->url);
-		}
-		
-		return $this;
 	}
 	
 	protected function action()

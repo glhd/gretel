@@ -5,21 +5,25 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Added
+
+- Added support for `Route::resource()`
+
 ## [1.3.0]
 
-## Added
+### Added
 
 - Added support for Inertia.js
 
-## [1.2.0]
+### [1.2.0]
 
-## Added
+### Added
 
 - Added `Gretel` facade
 - Added options for handling missing or mis-configured breadcrumbs (see README)
 - Added additional exceptions for more granular handling
 
-## Fixed
+### Fixed
 
 - Calling `Collection` methods on `RequestBreadcrumbs` now automatically populates the collection first
 
