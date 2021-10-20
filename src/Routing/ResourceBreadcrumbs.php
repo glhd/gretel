@@ -23,21 +23,18 @@ class ResourceBreadcrumbs
 	
 	protected array $options;
 	
-	protected ?string $parent = null;
-	
 	protected array $actions = [];
 	
-	public function __construct(string $name, array $options = [], ?string $parent = null)
+	public function __construct(string $name, array $options = [])
 	{
 		$this->name = $name;
 		$this->options = $options;
-		$this->parent = $parent;
 	}
 	
 	public function configure(array $config): self
 	{
 		foreach ($config as $action => $title) {
-			$this->configureAction($action, $title, static::$parents[$action] ?? $this->parent);
+			$this->configureAction($action, $title);
 		}
 		
 		return $this;
