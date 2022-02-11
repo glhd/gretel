@@ -3,12 +3,13 @@
 namespace Glhd\Gretel\View;
 
 use Illuminate\Support\Collection;
+use Traversable;
 
 class BreadcrumbCollection extends Collection
 {
 	public ?Breadcrumb $active = null;
 	
-	public function getIterator()
+	public function getIterator(): Traversable
 	{
 		$this->active = null;
 		
