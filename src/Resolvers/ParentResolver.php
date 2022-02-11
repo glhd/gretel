@@ -57,11 +57,11 @@ class ParentResolver extends Resolver
 			return $this->findParentByUrl($result, $registry);
 		}
 		
-		if (!($result instanceof RouteBreadcrumb)) {
+		if (! ($result instanceof RouteBreadcrumb)) {
 			throw new UnresolvableParentException($result, $name);
 		}
 		
-		if (!empty($parameters)) {
+		if (! empty($parameters)) {
 			$result = clone $result;
 			$result->setParameters($parameters);
 		}

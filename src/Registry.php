@@ -56,7 +56,7 @@ class Registry
 	
 	public function throwOnMissingBreadcrumbs(bool $throw = true): self
 	{
-		if (!$throw) {
+		if (! $throw) {
 			return $this->handleMissingBreadcrumbs(static function() {
 				// Ignore exception
 			});
@@ -76,7 +76,7 @@ class Registry
 	
 	public function throwOnMisconfiguredBreadcrumbs(bool $throw = true): self
 	{
-		if (!$throw) {
+		if (! $throw) {
 			return $this->handleMisconfiguredBreadcrumbs(static function() {
 				// Ignore exception
 			});
@@ -105,7 +105,7 @@ class Registry
 	
 	public function get($route): ?RouteBreadcrumb
 	{
-		if (!$name = $this->resolveName($route)) {
+		if (! $name = $this->resolveName($route)) {
 			return null;
 		}
 		
@@ -151,7 +151,7 @@ class Registry
 	{
 		$handler = $this->exception_handlers->get($kind);
 		
-		if (!$handler instanceof Closure) {
+		if (! $handler instanceof Closure) {
 			throw $exception;
 		}
 		

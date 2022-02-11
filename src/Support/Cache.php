@@ -41,7 +41,7 @@ class Cache
 	
 	public function clear(): bool
 	{
-		if (!$this->exists()) {
+		if (! $this->exists()) {
 			return true;
 		}
 		

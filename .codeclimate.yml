@@ -1,6 +1,12 @@
 exclude_patterns:
   - ".github/"
+  - ".idea/"
   - "stubs/"
   - "tests/"
   - "**/vendor/"
   - "**/node_modules/"
+  - "*.md"
+  - ".*.yml"
+  - "LICENSE"
+  - "composer.json"
+  - "phpunit.xml"

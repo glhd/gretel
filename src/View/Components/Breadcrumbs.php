@@ -57,7 +57,7 @@ class Breadcrumbs extends Component
 	
 	public function activeClass(string ...$class): ?string
 	{
-		if (!$this->breadcrumbs->active->is_current_page) {
+		if (! $this->breadcrumbs->active->is_current_page) {
 			return null;
 		}
 		
@@ -75,7 +75,7 @@ class Breadcrumbs extends Component
 	
 	public function ariaCurrent(string $value = 'page'): ?HtmlString
 	{
-		if (!$this->breadcrumbs->active->is_current_page) {
+		if (! $this->breadcrumbs->active->is_current_page) {
 			return null;
 		}
 		

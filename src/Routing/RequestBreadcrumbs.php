@@ -76,7 +76,7 @@ class RequestBreadcrumbs implements JsonSerializable, Arrayable, Jsonable
 	
 	protected function walk($value, $depth = 0): ?Breadcrumb
 	{
-		if (!$breadcrumb = $this->getRouteBreadcrumb($value)) {
+		if (! $breadcrumb = $this->getRouteBreadcrumb($value)) {
 			return null;
 		}
 		
