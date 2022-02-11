@@ -5,94 +5,107 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.5.0] - 2022-02-11
+
 ### Added
 
-- Added support for Laravel 9.0
+-   Added support for Laravel 9.0
 
 ## [1.4.0]
 
 ### Added
 
-- Added support for `Route::resource()`
+-   Added support for `Route::resource()`
 
 ## [1.3.0]
 
 ### Added
 
-- Added support for Inertia.js
+-   Added support for Inertia.js
 
 ### [1.2.0]
 
 ### Added
 
-- Added `Gretel` facade
-- Added options for handling missing or mis-configured breadcrumbs (see README)
-- Added additional exceptions for more granular handling
+-   Added `Gretel` facade
+-   Added options for handling missing or mis-configured breadcrumbs (see README)
+-   Added additional exceptions for more granular handling
 
 ### Fixed
 
-- Calling `Collection` methods on `RequestBreadcrumbs` now automatically populates the collection first
+-   Calling `Collection` methods on `RequestBreadcrumbs` now automatically populates the collection first
 
 ## [1.1.0]
 
 ### Changed
 
-- Updated the internal `Resolver` API
-- Improved parent resolver so that you can refer to routes that haven't been defined yet
+-   Updated the internal `Resolver` API
+-   Improved parent resolver so that you can refer to routes that haven't been defined yet
 
 ## [1.0.0]
 
 ### Fixed
 
-- Added `forwardDecoratedCallTo` for better backwards-compatibility
+-   Added `forwardDecoratedCallTo` for better backwards-compatibility
 
 ## [0.1.1]
 
 ### Fixed
 
-- Enabled package autoloading
+-   Enabled package autoloading
 
 ## [0.1.0]
 
 ### Fixed
 
-- Now actually loads cached breadcrumbs on boot :)
+-   Now actually loads cached breadcrumbs on boot :)
 
 ## [0.0.2]
 
 ### Added
 
-- Added support for most popular CSS frameworks
-- Introduced `Breadcrumb` and `BreadcrumbCollection` to make UI work easier
-- Added helpers to blade component for easier custom themes and better consistency across views
+-   Added support for most popular CSS frameworks
+-   Introduced `Breadcrumb` and `BreadcrumbCollection` to make UI work easier
+-   Added helpers to blade component for easier custom themes and better consistency across views
 
 ### Changed
 
-- Upgraded to PHPUnit 9.5
-- Improved route-bound breadcrumb structure
+-   Upgraded to PHPUnit 9.5
+-   Improved route-bound breadcrumb structure
 
 ## [0.0.1]
 
 ### Added
 
-- Initial release
+-   Initial release
 
 # Keep a Changelog Syntax
 
-- `Added` for new features.
-- `Changed` for changes in existing functionality.
-- `Deprecated` for soon-to-be removed features.
-- `Removed` for now removed features.
-- `Fixed` for any bug fixes. 
-- `Security` in case of vulnerabilities.
+-   `Added` for new features.
+-   `Changed` for changes in existing functionality.
+-   `Deprecated` for soon-to-be removed features.
+-   `Removed` for now removed features.
+-   `Fixed` for any bug fixes. 
+-   `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/1.4.0...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.5.0...HEAD
+
+[1.5.0]: https://github.com/glhd/gretel/compare/1.4.0...1.5.0
+
 [1.4.0]: https://github.com/glhd/gretel/compare/1.3.0...1.4.0
+
 [1.3.0]: https://github.com/glhd/gretel/compare/1.2.0...1.3.0
+
 [1.2.0]: https://github.com/glhd/gretel/compare/1.1.0...1.2.0
+
 [1.1.0]: https://github.com/glhd/gretel/compare/1.0.0...1.1.0
+
 [1.0.0]: https://github.com/glhd/gretel/compare/0.1.1...1.0.0
+
 [0.1.1]: https://github.com/glhd/gretel/compare/0.1.0...0.1.1
+
 [0.1.0]: https://github.com/glhd/gretel/compare/0.0.2...0.1.0
+
 [0.0.2]: https://github.com/glhd/gretel/compare/0.0.1...0.0.2
+
 [0.0.1]: https://github.com/glhd/gretel/releases/tag/0.0.1
