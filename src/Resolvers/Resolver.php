@@ -7,7 +7,8 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Support\BindsClosures;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
-use Opis\Closure\SerializableClosure;
+use Laravel\SerializableClosure\SerializableClosure;
+use Opis\Closure\SerializableClosure as OpisSerializableClosure;
 
 class Resolver
 {
@@ -70,7 +71,7 @@ class Resolver
 	{
 		if (null !== $this->serialized) {
 			$callback = unserialize($this->serialized, ['allow_classes' => true]);
-			if ($callback instanceof SerializableClosure) {
+			if ($this->isSerializableClosure($callback)) {
 				$this->callback = $callback->getClosure();
 				$this->serialized = null;
 			}
@@ -91,10 +92,26 @@ class Resolver
 		return $this->serialized;
 	}
 	
+	protected function isSerializableClosure($callback): bool
+	{
+		if ($callback instanceof SerializableClosure) {
+			return true;
+		}
+		
+		if (class_exists(OpisSerializableClosure::class) && $callback instanceof OpisSerializableClosure) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	protected function isSerializedClosure($value): bool
 	{
-		$fragment = 'C:'.strlen(SerializableClosure::class).':"'.SerializableClosure::class;
+		$needles = [
+			'O:'.strlen(SerializableClosure::class).':"'.SerializableClosure::class,
+			'C:'.strlen(OpisSerializableClosure::class).':"'.OpisSerializableClosure::class,
+		];
 		
-		return is_string($value) && Str::startsWith($value, $fragment);
+		return is_string($value) && Str::startsWith($value, $needles);
 	}
 }
