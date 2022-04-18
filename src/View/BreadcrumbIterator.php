@@ -15,6 +15,7 @@ class BreadcrumbIterator extends ArrayIterator
 		parent::__construct($array, $flags);
 	}
 	
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->collection->active = parent::current();
