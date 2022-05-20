@@ -15,8 +15,7 @@ class BreadcrumbIterator extends ArrayIterator
 		parent::__construct($array, $flags);
 	}
 	
-	#[\ReturnTypeWillChange]
-	public function current()
+	public function current(): mixed
 	{
 		return $this->collection->active = parent::current();
 	}
