@@ -7,6 +7,7 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
 use Glhd\Gretel\Resolvers\UrlResolver;
+use Illuminate\Routing\RouteUri;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
 use stdClass;
@@ -105,12 +106,22 @@ class ResourceBreadcrumbs
 	
 	protected function getParameterNamesForAction(string $action): array
 	{
-		$parameters = [];
+		$parameters = $this->getRouteGroupParameters();
 		
 		if (in_array($action, ['show', 'edit'])) {
 			$parameters[] = $this->options['parameters'][$this->name] ?? Str::singular($this->name);
 		}
 		
 		return $parameters;
+	}
+	
+	protected function getRouteGroupParameters(): array
+	{
+		$pattern = '/\{([\w:]+?)\??}/'; // See RouteUri::parse()
+		$prefix = Route::mergeWithLastGroup([])['prefix'] ?? '';
+
+		preg_match_all($pattern, $prefix, $matches);
+
+		return $matches[1] ?? [];
 	}
 }

@@ -294,6 +294,45 @@ class ResourceRoutesTest extends TestCase
 			['Edit', route('users.edit', $this->user)],
 		);
 	}
+
+	/**
+	 * @see https://github.com/glhd/gretel/issues/7
+	 * @dataProvider cachingProvider
+	 */
+	public function test_grouped_resource_routes(bool $cache): void
+	{
+		Route::middleware(SubstituteBindings::class)
+			->group(function() {
+				Route::resource('movies', ResourceRoutesTestController::class)
+					->except(['show'])
+					->breadcrumbs(function($breadcrumbs) {
+						$breadcrumbs->index('Movies')
+							->create('Create')
+							->edit('Edit', '.index');
+					});
+
+				Route::prefix('/movies/{movie}')
+					->group(function() {
+						Route::resource('actors', ResourceRoutesTestController::class)
+							->except(['index', 'show'])
+							->breadcrumbs(function($breadcrumbs) {
+								$breadcrumbs
+									->create('Create', 'movies.edit', fn($movie) => $movie)
+									->edit('Edit', 'movies.edit', fn($movie) => $movie);
+							});
+					});
+			});
+
+		$this->setUpCache($cache);
+
+		$this->get('/movies/1/actors/create');
+
+		$this->assertActiveBreadcrumbs([
+			['Movies', '/movies'],
+			['Edit', '/movies/1/edit'],
+			['Create', '/movies/1/actors/create'],
+		]);
+	}
 	
 	protected function registerResourceRoute(bool $cache, Closure $setup): self
 	{
