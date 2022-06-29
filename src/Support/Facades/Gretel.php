@@ -9,6 +9,7 @@ use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Facade;
 
 /**
+ * @method static Registry breadcrumb(string $name, $title = null, $parent = null, $relation = null)
  * @method static Registry handleMissingBreadcrumbs(Closure $callback)
  * @method static Registry throwOnMissingBreadcrumbs(bool $throw = true)
  * @method static Registry handleMisconfiguredBreadcrumbs(Closure $callback)

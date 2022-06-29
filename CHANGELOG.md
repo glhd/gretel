@@ -5,6 +5,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Added
+
+- Added the option to register breadcrumbs manually with `Gretel::breadcrumb()`
+
 ## [1.5.0] - 2022-02-11
 
 ### Added

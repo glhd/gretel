@@ -2,7 +2,7 @@
 <project version="4">
   <component name="PhpCSFixer">
     <phpcsfixer_settings>
-      <PhpCSFixerConfiguration standards="DoctrineAnnotation;PHP54Migration;PHP56Migration;PHP70Migration;PHP71Migration;PHP73Migration;PHP74Migration;PHP80Migration;PHPUnit30Migration;PHPUnit32Migration;PHPUnit35Migration;PHPUnit43Migration;PHPUnit48Migration;PHPUnit50Migration;PHPUnit52Migration;PHPUnit54Migration;PHPUnit55Migration;PHPUnit56Migration;PHPUnit57Migration;PHPUnit60Migration;PHPUnit75Migration;PHPUnit84Migration;PSR1;PSR12;PSR2;PhpCsFixer;Symfony" tool_path="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer/php-cs-fixer" />
+      <PhpCSFixerConfiguration standards="PSR1;PSR2;Symfony;DoctrineAnnotation;PHP70Migration;PHP71Migration" tool_path="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer/php-cs-fixer" />
     </phpcsfixer_settings>
   </component>
   <component name="PhpIncludePathManager">
@@ -13,7 +13,6 @@
       <path value="$PROJECT_DIR$/vendor/psr/http-message" />
       <path value="$PROJECT_DIR$/vendor/psr/simple-cache" />
       <path value="$PROJECT_DIR$/vendor/psr/log" />
-      <path value="$PROJECT_DIR$/vendor/opis/closure" />
       <path value="$PROJECT_DIR$/vendor/psr/http-factory" />
       <path value="$PROJECT_DIR$/vendor/brick/math" />
       <path value="$PROJECT_DIR$/vendor/voku/portable-ascii" />
@@ -46,7 +45,6 @@
       <path value="$PROJECT_DIR$/vendor/phpunit/phpunit" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-file-iterator" />
       <path value="$PROJECT_DIR$/vendor/phpunit/php-code-coverage" />
-      <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php73" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-iconv" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-ctype" />
       <path value="$PROJECT_DIR$/vendor/symfony/polyfill-php80" />
@@ -70,7 +68,6 @@
       <path value="$PROJECT_DIR$/vendor/symfony/mime" />
       <path value="$PROJECT_DIR$/vendor/symfony/routing" />
       <path value="$PROJECT_DIR$/vendor/symfony/deprecation-contracts" />
-      <path value="$PROJECT_DIR$/vendor/symfony/http-client-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/service-contracts" />
       <path value="$PROJECT_DIR$/vendor/symfony/error-handler" />
       <path value="$PROJECT_DIR$/vendor/symfony/http-foundation" />
@@ -107,7 +104,6 @@
       <path value="$PROJECT_DIR$/vendor/guzzlehttp/psr7" />
       <path value="$PROJECT_DIR$/vendor/webmozart/assert" />
       <path value="$PROJECT_DIR$/vendor/friendsofphp/php-cs-fixer" />
-      <path value="$PROJECT_DIR$/vendor/swiftmailer/swiftmailer" />
       <path value="$PROJECT_DIR$/vendor/tijsverkoyen/css-to-inline-styles" />
       <path value="$PROJECT_DIR$/vendor/php-cs-fixer/diff" />
       <path value="$PROJECT_DIR$/vendor/phpdocumentor/reflection-common" />
@@ -122,10 +118,11 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/complexity" />
       <path value="$PROJECT_DIR$/vendor/sebastian/code-unit" />
       <path value="$PROJECT_DIR$/vendor/sebastian/lines-of-code" />
-      <path value="$PROJECT_DIR$/vendor/_laravel_idea" />
       <path value="$PROJECT_DIR$/vendor/jdorn/sql-formatter" />
       <path value="$PROJECT_DIR$/vendor/glhd/laravel-dumper" />
       <path value="$PROJECT_DIR$/vendor/laravel/serializable-closure" />
+      <path value="$PROJECT_DIR$/vendor/symfony/mailer" />
+      <path value="$PROJECT_DIR$/vendor/fruitcake/php-cors" />
     </include_path>
   </component>
   <component name="PhpProjectSharedConfiguration" php_language_level="7.4">

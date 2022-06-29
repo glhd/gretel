@@ -45,7 +45,10 @@ class GretelServiceProvider extends ServiceProvider
 	{
 		$this->mergeConfigFrom("{$this->base_dir}/config.php", 'gretel');
 		
-		$this->app->singleton(Registry::class);
+		$this->app->singleton(Registry::class, function(Application $app) {
+			return new Registry($app->make('router'));
+		});
+		
 		$this->app->singleton(RouteBreadcrumbs::class);
 		
 		$this->app->singleton(Cache::class, function(Application $app) {

@@ -168,6 +168,20 @@ Route::resource('users', UserController::class)
   ]);
 ```
 
+#### Vendor Routes
+
+Sometimes you want to register breadcrumbs for routes that are defined in 3rd-party packages.
+In this case, you can use the `Gretel` facade directly. The API is exactly the same as the
+`Route::breadcrumb()` method, except that you must pass the route name as the first parameter:
+
+```php
+Gretel::breadcrumb(
+  'teams.show', // Route name
+  fn(Team $team) => $team->name, // Title callback
+  'profile.show', // Parent
+);
+```
+
 ### Displaying Breadcrumbs
 
 You can display the breadcrumbs for the current route with the `<x-breadcrumbs />` Blade component. The Blade component
