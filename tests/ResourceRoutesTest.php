@@ -327,11 +327,11 @@ class ResourceRoutesTest extends TestCase
 
 		$this->get('/movies/1/actors/create');
 
-		$this->assertActiveBreadcrumbs([
+		$this->assertActiveBreadcrumbs(
 			['Movies', '/movies'],
 			['Edit', '/movies/1/edit'],
 			['Create', '/movies/1/actors/create'],
-		]);
+		);
 	}
 	
 	protected function registerResourceRoute(bool $cache, Closure $setup): self
