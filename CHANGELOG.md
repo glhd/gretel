@@ -5,13 +5,15 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.6.0] - 2022-06-30
+
 ### Added
 
-- Added the option to register breadcrumbs manually with `Gretel::breadcrumb()`
+-   Added the option to register breadcrumbs manually with `Gretel::breadcrumb()`
 
 ### Fixed
 
-- Fixed issue where resource routes didn't work when [nested in route groups with parameters (#7)](https://github.com/glhd/gretel/issues/7)
+-   Fixed issue where resource routes didn't work when [nested in route groups with parameters (#7)](https://github.com/glhd/gretel/issues/7)
 
 ## [1.5.0] - 2022-02-11
 
@@ -96,7 +98,9 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 -   `Fixed` for any bug fixes. 
 -   `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/1.5.0...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.6.0...HEAD
+
+[1.6.0]: https://github.com/glhd/gretel/compare/1.5.0...1.6.0
 
 [1.5.0]: https://github.com/glhd/gretel/compare/1.4.0...1.5.0
 
