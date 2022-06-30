@@ -9,6 +9,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 - Added the option to register breadcrumbs manually with `Gretel::breadcrumb()`
 
+### Fixed
+
+- Fixed issue where resource routes didn't work when [nested in route groups with parameters (#7)](https://github.com/glhd/gretel/issues/7)
+
 ## [1.5.0] - 2022-02-11
 
 ### Added
