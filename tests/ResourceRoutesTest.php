@@ -4,6 +4,7 @@ namespace Glhd\Gretel\Tests;
 
 use Closure;
 use Glhd\Gretel\Routing\ResourceBreadcrumbs;
+use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\PendingResourceRegistration;
@@ -333,8 +334,43 @@ class ResourceRoutesTest extends TestCase
 			['Create', '/movies/1/actors/create'],
 		);
 	}
-	
-	protected function registerResourceRoute(bool $cache, Closure $setup): self
+
+    /**
+     * @dataProvider cachingProvider
+     */
+    public function test_nested_shallow_resource(bool $cache): void
+    {
+        Route::middleware(SubstituteBindings::class)
+            ->group(function() {
+                Route::resource('users', ResourceRoutesTestController::class)
+                    ->breadcrumbs([
+                        'index' => 'Users',
+                        'create' => 'New User',
+                        'edit' => 'Edit',
+                    ]);
+
+                Route::resource('users.notes', NotesController::class)
+                    ->shallow()
+                    ->breadcrumbs(fn(ResourceBreadcrumbs $breadcrumbs) => $breadcrumbs
+                        ->show(fn(Note $note) => $note->note, 'users.index', fn(Note $note) => $note->user)
+                        ->edit('Edit', '.show', fn(Note $note) => $note->user)
+                    );
+            });
+
+        $note = Note::factory()->create(['note' => 'some note']);
+
+        $this->setUpCache($cache);
+
+        $this->get('/notes/'.$note->id.'/edit');
+
+        $this->assertActiveBreadcrumbs(
+            ['Users', '/users'],
+            ['some note', '/notes/'.$note->id],
+            ['Edit', '/notes/'.$note->id.'/edit'],
+        );
+    }
+
+    protected function registerResourceRoute(bool $cache, Closure $setup): self
 	{
 		Route::middleware(SubstituteBindings::class)
 			->group(function() use ($setup) {
@@ -392,4 +428,12 @@ class ResourceRoutesTestJazzyDancerController
 	{
 		return $jazzy_dancer->name;
 	}
+}
+
+class NotesController
+{
+    public function edit(Note $note)
+    {
+        return $note;
+    }
 }

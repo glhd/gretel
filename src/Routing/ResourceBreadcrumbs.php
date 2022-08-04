@@ -99,17 +99,23 @@ class ResourceBreadcrumbs
 	protected function getRouteNameForAction(string $action): string
 	{
 		$names = $this->options['names'] ?? [];
-		$action = $names[$action] ?? "{$this->name}.{$action}";
-		
+
+		if ($this->isShallow() && in_array($action, ['show', 'edit'])) {
+			$action = $this->getShallowName().'.'.$action;
+		} else {
+			$action = $names[$action] ?? "{$this->name}.{$action}";
+		}
+
 		return trim(Route::mergeWithLastGroup(['as' => $action])['as'], '.');
 	}
 	
 	protected function getParameterNamesForAction(string $action): array
 	{
 		$parameters = $this->getRouteGroupParameters();
-		
+		$name = $this->isShallow() ? $this->getShallowName() : $this->name;
+
 		if (in_array($action, ['show', 'edit'])) {
-			$parameters[] = $this->options['parameters'][$this->name] ?? Str::singular($this->name);
+			$parameters[] = $this->options['parameters'][$name] ?? Str::singular($name);
 		}
 		
 		return $parameters;
@@ -123,5 +129,15 @@ class ResourceBreadcrumbs
 		preg_match_all($pattern, $prefix, $matches);
 
 		return $matches[1] ?? [];
+	}
+
+	private function isShallow(): bool
+	{
+		return isset($this->options['shallow']) && $this->options['shallow'];
+	}
+
+	private function getShallowName(): string
+	{
+		return last(explode('.', $this->name));
 	}
 }
