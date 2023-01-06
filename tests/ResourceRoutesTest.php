@@ -177,6 +177,46 @@ class ResourceRoutesTest extends TestCase
 	}
 	
 	/** @dataProvider cachingProvider */
+	public function test_hyphenated_names(bool $cache): void
+	{
+		Route::middleware(SubstituteBindings::class)
+			->group(function() {
+				Route::resource('jazzy-dancers', ResourceRoutesTestJazzyDancerController::class)
+					->breadcrumbs(fn(ResourceBreadcrumbs $breadcrumbs) => $breadcrumbs
+						->index('Jazzy Dancers')
+						->create('New Dancer')
+						->show(fn(User $jazzy_dancer) => $jazzy_dancer->name)
+						->edit('Edit'));
+			});
+		
+		$this->setUpCache($cache);
+		
+		$this->get(route('jazzy-dancers.index'));
+		$this->assertActiveBreadcrumbs(
+			['Jazzy Dancers', '/jazzy-dancers'],
+		);
+		
+		$this->get(route('jazzy-dancers.create'));
+		$this->assertActiveBreadcrumbs(
+			['Jazzy Dancers', '/jazzy-dancers'],
+			['New Dancer', '/jazzy-dancers/create'],
+		);
+		
+		$this->get(route('jazzy-dancers.show', $this->user));
+		$this->assertActiveBreadcrumbs(
+			['Jazzy Dancers', '/jazzy-dancers'],
+			[$this->user->name, route('jazzy-dancers.show', $this->user)],
+		);
+		
+		$this->get(route('jazzy-dancers.edit', $this->user));
+		$this->assertActiveBreadcrumbs(
+			['Jazzy Dancers', '/jazzy-dancers'],
+			[$this->user->name, route('jazzy-dancers.show', $this->user)],
+			['Edit', route('jazzy-dancers.edit', $this->user)],
+		);
+	}
+	
+	/** @dataProvider cachingProvider */
 	public function test_custom_parents(bool $cache): void
 	{
 		$this->registerResourceRoute($cache, function(PendingResourceRegistration $resource) {
