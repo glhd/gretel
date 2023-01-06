@@ -7,10 +7,12 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Resolvers\ParentResolver;
 use Glhd\Gretel\Resolvers\TitleResolver;
 use Glhd\Gretel\Resolvers\UrlResolver;
-use Illuminate\Routing\RouteUri;
+use Illuminate\Routing\ResourceRegistrar;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Str;
+use ReflectionClass;
 use stdClass;
+use Throwable;
 
 class ResourceBreadcrumbs
 {
@@ -84,7 +86,7 @@ class ResourceBreadcrumbs
 	protected function makeBreadcrumbForAction(string $action, stdClass $config): RouteBreadcrumb
 	{
 		if (is_string($config->parent)) {
-			$config->parent = preg_replace_callback('/^\.([a-z_-]+)$/', fn($matches) => $this->getRouteNameForAction($matches[1]), $config->parent);
+			$config->parent = preg_replace_callback('/^\.([a-z_-]+)$/', fn ($matches) => $this->getRouteNameForAction($matches[1]), $config->parent);
 		}
 		
 		$name = $this->getRouteNameForAction($action);
@@ -109,7 +111,7 @@ class ResourceBreadcrumbs
 		$parameters = $this->getRouteGroupParameters();
 		
 		if (in_array($action, ['show', 'edit'])) {
-			$parameters[] = $this->options['parameters'][$this->name] ?? Str::singular($this->name);
+			$parameters[] = $this->getResourceWildcard();
 		}
 		
 		return $parameters;
@@ -119,9 +121,47 @@ class ResourceBreadcrumbs
 	{
 		$pattern = '/\{([\w:]+?)\??}/'; // See RouteUri::parse()
 		$prefix = Route::mergeWithLastGroup([])['prefix'] ?? '';
-
+		
 		preg_match_all($pattern, $prefix, $matches);
-
+		
 		return $matches[1] ?? [];
+	}
+	
+	protected function getResourceWildcard(): string
+	{
+		return str_replace('-', '_', $this->getRawResourceWildcard());
+	}
+	
+	/** @see \Illuminate\Routing\ResourceRegistrar::getResourceWildcard() */
+	protected function getRawResourceWildcard(): string
+	{
+		$value = $this->name;
+		
+		if (isset($this->options['parameters'][$value])) {
+			return $this->options['parameters'][$value];
+		}
+		
+		$global_parameters = ResourceRegistrar::getParameters();
+		if (isset($global_parameters[$value])) {
+			return $global_parameters[$value];
+		}
+		
+		if ('singular' === $this->options['parameters']) {
+			return Str::singular($value);
+		}
+		
+		// ResourceRegistrar::$singularParameters is protected, so we need to be a little careful about how we rely on it.
+		try {
+			$singular_by_default = (new ReflectionClass(ResourceRegistrar::class))
+				->getStaticPropertyValue('singularParameters', true);
+			
+			if ($singular_by_default) {
+				return Str::singular($value);
+			}
+		} catch (Throwable $exception) {
+			
+		}
+			
+		return $value;
 	}
 }

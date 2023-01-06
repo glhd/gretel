@@ -5,6 +5,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+### Fixed
+
+- Fixed the naming logic for resource route parameters to map more closely to the default Laravel implementation
+
 ## [1.6.0] - 2022-06-30
 
 ### Added
