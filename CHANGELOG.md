@@ -9,7 +9,10 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ### Fixed
 
--   Fixed the naming logic for resource route parameters to map more closely to the default Laravel implementation
+-   Resource routes now respect global names set via `ResourceRegistrar::setParameters()`
+-   Resource routes now respect the `ResourceRegistrar::singularParameters()` config
+-   Resource routes now account for setting `parameters` to `"singular"` on a case-by-case basis
+-   Resource routes now correctly handle resource names that are hyphenated
 
 ## [1.6.0] - 2022-06-30
 
