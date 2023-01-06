@@ -10,6 +10,7 @@ return (new PhpCsFixer\Config())
 		'@PSR2' => true,
 		'function_declaration' => [
 			'closure_function_spacing' => 'none',
+			'closure_fn_spacing' => 'none',
 		],
 		'ordered_imports' => [
 			'sort_algorithm' => 'alpha',

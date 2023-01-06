@@ -86,7 +86,7 @@ class ResourceBreadcrumbs
 	protected function makeBreadcrumbForAction(string $action, stdClass $config): RouteBreadcrumb
 	{
 		if (is_string($config->parent)) {
-			$config->parent = preg_replace_callback('/^\.([a-z_-]+)$/', fn ($matches) => $this->getRouteNameForAction($matches[1]), $config->parent);
+			$config->parent = preg_replace_callback('/^\.([a-z_-]+)$/', fn($matches) => $this->getRouteNameForAction($matches[1]), $config->parent);
 		}
 		
 		$name = $this->getRouteNameForAction($action);
