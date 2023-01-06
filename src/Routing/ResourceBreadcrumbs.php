@@ -146,7 +146,7 @@ class ResourceBreadcrumbs
 			return $global_parameters[$value];
 		}
 		
-		if ('singular' === $this->options['parameters']) {
+		if (isset($this->options['parameters']) && 'singular' === $this->options['parameters']) {
 			return Str::singular($value);
 		}
 		
@@ -159,7 +159,6 @@ class ResourceBreadcrumbs
 				return Str::singular($value);
 			}
 		} catch (Throwable $exception) {
-			
 		}
 			
 		return $value;
