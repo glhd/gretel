@@ -5,9 +5,11 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.6.1] - 2023-01-06
+
 ### Fixed
 
-- Fixed the naming logic for resource route parameters to map more closely to the default Laravel implementation
+-   Fixed the naming logic for resource route parameters to map more closely to the default Laravel implementation
 
 ## [1.6.0] - 2022-06-30
 
@@ -102,7 +104,9 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 -   `Fixed` for any bug fixes. 
 -   `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/1.6.0...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.6.1...HEAD
+
+[1.6.1]: https://github.com/glhd/gretel/compare/1.6.0...1.6.1
 
 [1.6.0]: https://github.com/glhd/gretel/compare/1.5.0...1.6.0
 
