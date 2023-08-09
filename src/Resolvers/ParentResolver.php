@@ -2,13 +2,13 @@
 
 namespace Glhd\Gretel\Resolvers;
 
-use Arr;
 use Closure;
 use Glhd\Gretel\Exceptions\UnmatchedRouteException;
 use Glhd\Gretel\Exceptions\UnresolvableParentException;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Routing\RouteBreadcrumb;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
