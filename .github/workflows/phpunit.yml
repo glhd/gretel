@@ -65,7 +65,7 @@ jobs:
             ${{ runner.os }}-composer-
 
       - name: Install dependencies
-        run: composer require --no-interaction --prefer-dist --no-update "illuminate/support:${{ matrix.laravel }}""orchestra/testbench:${{ matrix.testbench }}"
+        run: composer require --no-interaction --prefer-dist --no-update "illuminate/support:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}"
       
       - name: Set dependency version
         run: composer update --no-interaction --prefer-dist --with-all-dependencies --prefer-${{ matrix.dependency-version }}
