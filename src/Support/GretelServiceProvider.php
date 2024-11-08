@@ -137,8 +137,8 @@ class GretelServiceProvider extends ServiceProvider
 		$packages = $config->get('gretel.packages', []);
 		
 		if (Arr::get($packages, 'inertiajs/inertia-laravel') && class_exists(Inertia::class)) {
-			Inertia::share('breadcrumbs', static function(Request $request) {
-				if ($route = $request->route()) {
+			Inertia::share('breadcrumbs', static function() {
+				if ($route = request()->route()) {
 					return $route->breadcrumbs()->jsonSerialize();
 				}
 				return [];
