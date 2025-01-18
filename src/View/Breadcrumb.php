@@ -20,7 +20,7 @@ class Breadcrumb implements Arrayable, Jsonable, JsonSerializable
 		string $title,
 		string $url,
 		bool $is_current_page = false,
-		Breadcrumb $parent = null
+		?Breadcrumb $parent = null
 	) {
 		$this->title = $title;
 		$this->url = $url;
