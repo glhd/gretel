@@ -23,8 +23,8 @@ class Breadcrumbs extends Component
 		RequestBreadcrumbs $breadcrumbs,
 		Registry $registry,
 		Repository $config,
-		string $framework = null,
-		string $view = null,
+		?string $framework = null,
+		?string $view = null,
 		bool $jsonLd = false,
 		bool $rdfa = false
 	) {

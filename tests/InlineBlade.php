@@ -13,8 +13,8 @@ class InlineBlade extends View
 	public function __construct(
 		string $contents,
 		$data = [],
-		Factory $factory = null,
-		Filesystem $fs = null
+		?Factory $factory = null,
+		?Filesystem $fs = null
 	) {
 		$this->fs = $fs ?? new Filesystem();
 		
