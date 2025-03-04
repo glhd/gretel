@@ -15,15 +15,8 @@ jobs:
     strategy:
       matrix:
         dependency-version: [ stable, lowest ]
-        laravel: [ ^9.50.2, 10.*, 11.*, 12.* ]
+        laravel: [ 10.*, 11.*, 12.* ]
         php: [ 8.2, 8.3, 8.4 ]
-        exclude:
-          - php: 8.4
-            laravel: ^8.79
-          - php: 8.3
-            laravel: ^8.79
-          - php: 8.2
-            laravel: ^8.79
             
     timeout-minutes: 10
     
