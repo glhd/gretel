@@ -7,7 +7,7 @@ use Glhd\Gretel\Support\Cache;
 
 trait TestsCachedBreadcrumbs
 {
-	public function cachingProvider(): array
+	public static function cachingProvider(): array
 	{
 		return [
 			'Uncached' => [false],
