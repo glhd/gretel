@@ -143,7 +143,7 @@ Route::get('/users/{user}', [UserController::class, 'show'])
 
 You can also define breadcrumbs for resource controllers. The `index()`, `create()`,
 `show()`, and `edit()` methods behave exactly like the regular breadcrumb helper except that
-they automatically set up the parent for you if you don’t provide one.
+they automatically set up the parent for you if you don't provide one.
 
 ```php
 Route::resource('users', UserController::class)
@@ -262,7 +262,7 @@ You can render a custom view either by publishing the `gretel.php` config file v
 #### Using Breadcrumbs in Some Other Way
 
 If you need to use the breadcrumbs in some other way—maybe for rending via a client-side
-framework that Gretel doesn’t already integrate with—you can always just get the current
+framework that Gretel doesn't already integrate with—you can always just get the current
 breadcrumbs as a `Collection` or `array` off the route:
 
 ```php
@@ -376,3 +376,97 @@ const breadcrumbs = [
 You can then render the breadcrumbs in the client however you see fit. Be sure to review
 the [custom breadcrumbs](#custom-breadcrumb-view) section for information about how to
 ensure that your client-side breadcrumbs are fully accessible.
+
+### Frontend Components
+
+Gretel provides React, Vue, and Alpine.js components that maintain the same accessibility features
+as the Blade components. These components are designed to work seamlessly with Inertia.js and follow
+each framework's conventions.
+
+#### React Component
+
+```jsx
+import Breadcrumbs from '@/components/Breadcrumbs';
+
+// In your React component:
+<Breadcrumbs 
+  breadcrumbs={breadcrumbs}
+  // Optional props:
+  linkClassName="text-gray-500 hover:text-gray-800"
+  separatorClassName="text-gray-300 ml-4 select-none"
+  containerClassName="px-5 py-3 rounded flex flex-wrap bg-gray-100 text-sm"
+  separator="/"
+  renderLink={({ href, children, isCurrentPage }) => (
+    <a 
+      href={href} 
+      className={linkClassName}
+      {...(isCurrentPage ? { 'aria-current': 'page' } : {})}
+    >
+      {children}
+    </a>
+  )}
+/>
+```
+
+#### Vue Component
+
+```vue
+<template>
+  <Breadcrumbs 
+    :breadcrumbs="breadcrumbs"
+    link-class-name="text-gray-500 hover:text-gray-800"
+    separator-class-name="text-gray-300 ml-4 select-none"
+    container-class-name="px-5 py-3 rounded flex flex-wrap bg-gray-100 text-sm"
+    separator="/"
+    :render-link="({ href, children, isCurrentPage }) => ({
+      template: `<a :href='href' :class='className' :aria-current='isCurrentPage ? \"page\" : undefined'>${children}</a>`,
+      props: ['href', 'className', 'isCurrentPage', 'children']
+    })"
+  />
+</template>
+
+<script>
+import Breadcrumbs from '@/components/Breadcrumbs.vue';
+
+export default {
+  components: { Breadcrumbs },
+  // ...
+}
+</script>
+```
+
+#### Alpine.js Component
+
+```html
+<div x-data="breadcrumbs()" data-breadcrumbs='@json($breadcrumbs->jsonSerialize())'>
+  <nav aria-label="Breadcrumb">
+    <ol :class="containerClassName">
+      <template x-for="(breadcrumb, index) in breadcrumbs" :key="breadcrumb.url">
+        <li :class="{ 'mr-4': index !== breadcrumbs.length - 1 }">
+          <div class="flex items-center">
+            <span x-html="renderLink(breadcrumb)"></span>
+            <span 
+              x-show="index !== breadcrumbs.length - 1"
+              aria-hidden="true" 
+              :class="separatorClassName"
+              x-text="separator"
+            ></span>
+          </div>
+        </li>
+      </template>
+    </ol>
+  </nav>
+</div>
+```
+
+Each component maintains the same accessibility features as the Blade components:
+- Uses semantic HTML (`<nav>`, `<ol>`, `<li>`)
+- Includes proper ARIA attributes (`aria-label`, `aria-current`, `aria-hidden`)
+- Maintains keyboard navigation support
+- Preserves the same visual structure and styling options
+
+The components are also highly customizable through props, allowing you to:
+- Override default class names
+- Customize the separator character
+- Provide custom link rendering logic
+- Maintain consistent styling with your application's design system
