@@ -17,7 +17,7 @@
     "illuminate/support": "^8|^9|^10|^11|^12|13.x-dev|dev-master|dev-main",
     "illuminate/routing": "^8|^9|^10|^11|^12|13.x-dev|dev-master|dev-main",
     "illuminate/view": "^8|^9|^10|^11|^12|13.x-dev|dev-master|dev-main",
-    "laravel/serializable-closure": "^1.0"
+    "laravel/serializable-closure": "^1.0|^2.0"
   },
   "require-dev": {
     "orchestra/testbench": "^6.24|^7.10|^8.33|^9.11|^10.0|11.x-dev|dev-master|dev-main",
