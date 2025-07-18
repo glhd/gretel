@@ -40,7 +40,7 @@ class Macros
 		Route $route,
 		$title,
 		$parent = null,
-		Closure $relation = null
+		?Closure $relation = null
 	): Route {
 		$registry->withExceptionHandling(function() use ($registry, $route, $title, $parent, $relation) {
 			if (! $name = $route->getName()) {

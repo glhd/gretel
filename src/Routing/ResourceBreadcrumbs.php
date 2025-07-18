@@ -43,22 +43,22 @@ class ResourceBreadcrumbs
 		return $this;
 	}
 	
-	public function index($title, $parent = null, Closure $relation = null): self
+	public function index($title, $parent = null, ?Closure $relation = null): self
 	{
 		return $this->configureAction('index', $title, $parent, $relation);
 	}
 	
-	public function create($title, $parent = null, Closure $relation = null): self
+	public function create($title, $parent = null, ?Closure $relation = null): self
 	{
 		return $this->configureAction('create', $title, $parent, $relation);
 	}
 	
-	public function show($title, $parent = null, Closure $relation = null): self
+	public function show($title, $parent = null, ?Closure $relation = null): self
 	{
 		return $this->configureAction('show', $title, $parent, $relation);
 	}
 	
-	public function edit($title, $parent = null, Closure $relation = null): self
+	public function edit($title, $parent = null, ?Closure $relation = null): self
 	{
 		return $this->configureAction('edit', $title, $parent, $relation);
 	}
