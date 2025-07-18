@@ -5,6 +5,8 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 
 ## [Unreleased]
 
+## [1.9.2] - 2025-07-18
+
 ## [1.9.1] - 2025-03-10
 
 ## [1.9.0] - 2025-03-04
@@ -119,7 +121,9 @@ format. This project adheres to [Semantic Versioning](https://semver.org/spec/v2
 -   `Fixed` for any bug fixes. 
 -   `Security` in case of vulnerabilities.
 
-[Unreleased]: https://github.com/glhd/gretel/compare/1.9.1...HEAD
+[Unreleased]: https://github.com/glhd/gretel/compare/1.9.2...HEAD
+
+[1.9.2]: https://github.com/glhd/gretel/compare/1.9.1...1.9.2
 
 [1.9.1]: https://github.com/glhd/gretel/compare/1.9.0...1.9.1
 
