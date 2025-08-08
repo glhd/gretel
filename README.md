@@ -168,6 +168,35 @@ Route::resource('users', UserController::class)
   ]);
 ```
 
+You can define breadcrumbs for nested resources. Parent resources will be passed
+to callables, otherwise is the same simple resource controllers.
+
+
+```php
+Route::resource('users.files', FilesController::class)
+  ->breadcrumbs(function(ResourceBreadcrumbs $breadcrumbs) {
+    $breadcrumbs
+      ->index('Files')
+      ->create('New File')
+      ->show(fn(User $user, File $file) => $file->name)
+      ->edit('Edit');
+  });
+```
+
+In addition you can set parent a parent resource route as parent route. Parent
+resource parameters are included in the route generation params.
+
+```php
+Route::resource('users.files', FilesController::class)
+  ->breadcrumbs(function(ResourceBreadcrumbs $breadcrumbs) {
+    $breadcrumbs
+      ->index('Files', 'users.show')
+      ->create('New File')
+      ->show(fn(User $user, File $file) => $file->name)
+      ->edit('Edit');
+  });
+```
+
 #### Vendor Routes
 
 Sometimes you want to register breadcrumbs for routes that are defined in 3rd-party packages.

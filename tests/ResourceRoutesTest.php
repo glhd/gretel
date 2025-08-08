@@ -4,6 +4,7 @@ namespace Glhd\Gretel\Tests;
 
 use Closure;
 use Glhd\Gretel\Routing\ResourceBreadcrumbs;
+use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Routing\PendingResourceRegistration;
@@ -14,7 +15,7 @@ class ResourceRoutesTest extends TestCase
 	use TestsCachedBreadcrumbs;
 	
 	protected User $user;
-	
+	protected Note $note;
 	protected function setUp(): void
 	{
 		parent::setUp();
@@ -373,7 +374,71 @@ class ResourceRoutesTest extends TestCase
 			['Create', '/movies/1/actors/create'],
 		);
 	}
-	
+
+	/** @dataProvider cachingProvider */
+	public function test_nested_resource_routes(bool $cache): void
+	{
+		Route::middleware(SubstituteBindings::class)->group(function()  {
+			Route::get('/', fn() => 'Home')->name('home')->breadcrumb('Home');
+
+			Route::resource('users', ResourceRoutesTestController::class)
+				->breadcrumbs(fn(ResourceBreadcrumbs $breadcrumbs) => $breadcrumbs
+					->index('Users', 'home')
+					->create('New User')
+					->show(fn(User $user) => $user->name)
+					->edit('Edit'));
+
+			Route::resource('users.notes', NestedResourceRoutesTestController::class)
+				->breadcrumbs(fn(ResourceBreadcrumbs $breadcrumbs) => $breadcrumbs
+					->index('Notes', 'users.show')
+					->create('Create')
+					->edit('Edit')
+					->show(fn(User $user, Note $note) => "{$user->name} : {$note->note}"));
+		});
+
+		$this->setUpCache($cache);
+
+		$this->note = Note::factory()->create([
+			'user_id' => $this->user->id
+		]);
+
+		$this->get(route('users.notes.index', $this->user));
+		$this->assertActiveBreadcrumbs(
+			['Home', '/'],
+			['Users', '/users'],
+			[$this->user->name, '/users/1'],
+			['Notes', '/users/1/notes'],
+		);
+
+		$this->get(route('users.notes.create', $this->user));
+		$this->assertActiveBreadcrumbs(
+			['Home', '/'],
+			['Users', '/users'],
+			[$this->user->name, '/users/1'],
+			['Notes', '/users/1/notes'],
+			['Create', '/users/1/notes/create'],
+		);
+
+		$this->get(route('users.notes.show', [$this->user, $this->note]));
+		$this->assertActiveBreadcrumbs(
+			['Home', '/'],
+			['Users', '/users'],
+			[$this->user->name, '/users/1'],
+			['Notes', '/users/1/notes'],
+			["{$this->user->name} : {$this->note->note}", '/users/1/notes/1'],
+		);
+
+		$this->get(route('users.notes.edit', [$this->user, $this->note]));
+		$this->assertActiveBreadcrumbs(
+			['Home', '/'],
+			['Users', '/users'],
+			[$this->user->name, '/users/1'],
+			['Notes', '/users/1/notes'],
+			["{$this->user->name} : {$this->note->note}", '/users/1/notes/1'],
+			['Edit', '/users/1/notes/1/edit'],
+		);
+	}
+
 	protected function registerResourceRoute(bool $cache, Closure $setup): self
 	{
 		Route::middleware(SubstituteBindings::class)
@@ -431,5 +496,28 @@ class ResourceRoutesTestJazzyDancerController
 	public function edit(User $jazzy_dancer)
 	{
 		return $jazzy_dancer->name;
+	}
+}
+
+class NestedResourceRoutesTestController
+{
+	public function index(User $user)
+	{
+		return 'User Notes';
+	}
+
+	public function create(User $user)
+	{
+		return 'Create';
+	}
+
+	public function show(User $user, Note $note)
+	{
+		return $note->note;
+	}
+
+	public function edit(User $user, Note $note)
+	{
+		return $note->note;
 	}
 }
