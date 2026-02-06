@@ -2,6 +2,7 @@
 
 namespace Glhd\Gretel\Commands;
 
+use Closure;
 use Glhd\Gretel\Registry;
 use Glhd\Gretel\Support\Cache;
 use Illuminate\Console\Command;
@@ -14,19 +15,40 @@ class CacheBreadcrumbs extends Command
 	
 	public function handle(Cache $cache, Registry $registry)
 	{
-		if ($this->laravel->routesAreCached()) {
-			$this->error("You must call '{$this->signature}' before you cache routes!");
+		$routes_are_cached = $this->laravel->routesAreCached();
+		
+		try {
+			if ($routes_are_cached) {
+				$this->call('route:clear');
+			}
+			
+			$this->call('breadcrumbs:clear');
+			
+			if ($cache->write($registry)) {
+				$this->info('Breadcrumbs cached successfully!');
+				return 0;
+			}
+			
+			$this->error('Unable to cache breadcrumbs.');
 			return 1;
+		} finally {
+			if ($routes_are_cached) {
+				$this->call('route:cache');
+			}
+		}
+	}
+	
+	protected function withUncachedRoutes(Closure $callback)
+	{
+		if (! $this->laravel->routesAreCached()) {
+			return $callback();
 		}
 		
-		$this->call('breadcrumbs:clear');
-		
-		if ($cache->write($registry)) {
-			$this->info('Breadcrumbs cached successfully!');
-			return 0;
+		try {
+			$this->call('route:clear');
+			return $callback();
+		} finally {
+			$this->call('route:cache');
 		}
-		
-		$this->error('Unable to cache breadcrumbs.');
-		return 1;
 	}
 }
