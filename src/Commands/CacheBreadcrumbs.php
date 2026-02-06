@@ -15,13 +15,7 @@ class CacheBreadcrumbs extends Command
 	
 	public function handle(Cache $cache, Registry $registry)
 	{
-		$routes_are_cached = $this->laravel->routesAreCached();
-		
-		try {
-			if ($routes_are_cached) {
-				$this->call('route:clear');
-			}
-			
+		$this->withUncachedRoutes(function() use ($cache, $registry) {
 			$this->call('breadcrumbs:clear');
 			
 			if ($cache->write($registry)) {
@@ -31,11 +25,7 @@ class CacheBreadcrumbs extends Command
 			
 			$this->error('Unable to cache breadcrumbs.');
 			return 1;
-		} finally {
-			if ($routes_are_cached) {
-				$this->call('route:cache');
-			}
-		}
+		});
 	}
 	
 	protected function withUncachedRoutes(Closure $callback)
