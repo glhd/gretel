@@ -37,6 +37,7 @@ class GretelServiceProvider extends ServiceProvider
 		$this->bootViews();
 		$this->bootBladeComponents();
 		$this->bootCommands();
+		$this->bootOptimizes();
 		$this->bootCachedBreadcrumbs();
 		$this->bootThirdParty();
 	}
@@ -109,13 +110,16 @@ class GretelServiceProvider extends ServiceProvider
 		return $this;
 	}
 	
+	protected function bootOptimizes()
+	{
+		if (method_exists($this, 'optimizes')) {
+			$this->optimizes('breadcrumbs:cache', 'breadcrumbs:clear', 'breadcrumbs');
+		}
+	}
+	
 	protected function bootCommands(): self
 	{
 		if ($this->app->runningInConsole()) {
-			if (method_exists($this, 'optimizes')) {
-				$this->optimizes('breadcrumbs:cache', 'breadcrumbs:clear', 'breadcrumbs');
-			}
-			
 			$this->commands([
 				CacheBreadcrumbs::class,
 				ClearBreadcrumbs::class,
