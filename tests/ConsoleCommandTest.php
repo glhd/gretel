@@ -68,15 +68,15 @@ class ConsoleCommandTest extends TestCase
 		$cache = $this->app->make(Cache::class);
 		
 		try {
-			$this->assertFileDoesNotExist($cache->path());
+			$this->assertFileDoesNotExist($cache->path(), 'Cache file should not exist before calling optimize');
 			$this->artisan('optimize');
-			$this->assertFileExists($cache->path());
-			$this->assertTrue($this->app->routesAreCached());
+			$this->assertFileExists($cache->path(), 'Cache file should exist after calling optimize');
+			$this->assertTrue($this->app->routesAreCached(), 'Routes should be cached after calling optimize');
 		} finally {
 			$this->artisan('optimize:clear');
 		}
 		
-		$this->assertFileDoesNotExist($cache->path());
-		$this->assertFalse($this->app->routesAreCached());
+		$this->assertFileDoesNotExist($cache->path(), 'Cache file should not exist after calling optimize:clear');
+		$this->assertFalse($this->app->routesAreCached(), 'Routes should not be cached after calling optimize:clear');
 	}
 }
