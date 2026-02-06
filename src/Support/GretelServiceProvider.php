@@ -112,6 +112,10 @@ class GretelServiceProvider extends ServiceProvider
 	protected function bootCommands(): self
 	{
 		if ($this->app->runningInConsole()) {
+			if (method_exists($this, 'optimizes')) {
+				$this->optimizes('breadcrumbs:cache', 'breadcrumbs:clear', 'breadcrumbs');
+			}
+			
 			$this->commands([
 				CacheBreadcrumbs::class,
 				ClearBreadcrumbs::class,
