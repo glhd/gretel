@@ -6,9 +6,9 @@ use Glhd\Gretel\Registry;
 use Glhd\Gretel\Support\Cache;
 use Glhd\Gretel\Tests\Models\Note;
 use Glhd\Gretel\Tests\Models\User;
-use Illuminate\Filesystem\Filesystem;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\ServiceProvider;
 
 class ConsoleCommandTest extends TestCase
 {
@@ -56,19 +56,27 @@ class ConsoleCommandTest extends TestCase
 		$this->assertFileDoesNotExist($cache->path());
 	}
 	
-	public function test_cache_command_triggers_error_if_routes_are_already_cached(): void
+	public function test_optimize_handles_route_cache(): void
 	{
-		$fs = new Filesystem();
-		$cached_routes_path = $this->app->getCachedRoutesPath();
+		if (
+			! class_exists('\Illuminate\Foundation\Console\OptimizeCommand')
+			|| ! property_exists(ServiceProvider::class, 'optimizeCommands')
+		) {
+			$this->markTestSkipped('Custom "optimize" commands do not exist in this version of Laravel.');
+		}
+		
+		$cache = $this->app->make(Cache::class);
 		
 		try {
-			$this->app->instance('routes.cached', true);
-			$fs->put($cached_routes_path, '');
-			$this->artisan('breadcrumbs:cache')->assertExitCode(1);
+			$this->assertFileDoesNotExist($cache->path());
+			$this->artisan('optimize');
+			$this->assertFileExists($cache->path());
+			$this->assertTrue($this->app->routesAreCached());
 		} finally {
-			$this->app->instance('routes.cached', false);
-			$fs->delete($cached_routes_path);
-			$this->artisan('breadcrumbs:clear');
+			$this->artisan('optimize:clear');
 		}
+		
+		$this->assertFileDoesNotExist($cache->path());
+		$this->assertFalse($this->app->routesAreCached());
 	}
 }
