@@ -62,9 +62,11 @@ class ConsoleCommandTest extends TestCase
 		$cached_routes_path = $this->app->getCachedRoutesPath();
 		
 		try {
+			$this->app->instance('routes.cached', true);
 			$fs->put($cached_routes_path, '');
 			$this->artisan('breadcrumbs:cache')->assertExitCode(1);
 		} finally {
+			$this->app->instance('routes.cached', false);
 			$fs->delete($cached_routes_path);
 			$this->artisan('breadcrumbs:clear');
 		}
