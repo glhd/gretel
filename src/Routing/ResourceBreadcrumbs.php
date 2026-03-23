@@ -109,11 +109,15 @@ class ResourceBreadcrumbs
 	protected function getParameterNamesForAction(string $action): array
 	{
 		$parameters = $this->getRouteGroupParameters();
-		
-		if (in_array($action, ['show', 'edit'])) {
-			$parameters[] = $this->getResourceWildcard();
+		$nameParts = explode('.', $this->name);
+		$lastPart = end($nameParts);
+
+		foreach ($nameParts as $part) {
+			if ($lastPart !== $part || in_array($action, ['show', 'edit'])) {
+				$parameters[] = $this->getResourceWildcard($part);
+			}
 		}
-		
+
 		return $parameters;
 	}
 	
@@ -127,13 +131,13 @@ class ResourceBreadcrumbs
 		return $matches[1] ?? [];
 	}
 	
-	protected function getResourceWildcard(): string
+	protected function getResourceWildcard(string $value): string
 	{
 		return str_replace('-', '_', $this->getRawResourceWildcard());
 	}
 	
 	/** @see \Illuminate\Routing\ResourceRegistrar::getResourceWildcard() */
-	protected function getRawResourceWildcard(): string
+	protected function getRawResourceWildcard(string $value): string
 	{
 		$value = $this->name;
 		
